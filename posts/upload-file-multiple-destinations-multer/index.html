@@ -1,0 +1,130 @@
+<!doctype html><html>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge"><title>Upload file to multiple destinations using multer in node.js - Yet another software engineer</title><link rel=icon type=image/png href=icons/myicon.png><meta name=viewport content="width=device-width,initial-scale=1">
+<meta property="og:title" content="Upload file to multiple destinations using multer in node.js">
+<meta property="og:description" content="Upload a file to multiple destination using multer module in nodejs.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://anotherdev.xyz/posts/upload-file-multiple-destinations-multer/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2019-12-09T07:18:06+00:00">
+<meta property="article:modified_time" content="2019-12-09T07:18:06+00:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Upload file to multiple destinations using multer in node.js">
+<meta name=twitter:description content="Upload a file to multiple destination using multer module in nodejs.">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel=stylesheet>
+<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/normalize.css>
+<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/main.css>
+<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/custom.css>
+<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/dark.css media="(prefers-color-scheme: dark)">
+<script src=https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js></script>
+<script src=https://anotherdev.xyz/js/main.js></script>
+</head>
+<body>
+<div class="container wrapper post">
+<div class=header>
+<base href=https://anotherdev.xyz/>
+<h1 class=site-title><a href=https://anotherdev.xyz/>Yet another software engineer</a></h1>
+<div class=site-description><h2>My thoughts are my own</h2><nav class="nav social">
+<ul class=flat><a href=https://github.com/shihabmridha title=Github><i data-feather=github></i></a><a href=https://twitter.com/shihabmridha title=Twitter><i data-feather=twitter></i></a></ul>
+</nav>
+</div>
+<nav class=nav>
+<ul class=flat>
+<li>
+<a href=/>Home</a>
+</li>
+<li>
+<a href=/posts>All posts</a>
+</li>
+<li>
+<a href=/about>About</a>
+</li>
+<li>
+<a href=/tags>Tags</a>
+</li>
+</ul>
+</nav>
+</div>
+<div class=post-header>
+<h1 class=title>Upload file to multiple destinations using multer in node.js</h1>
+<div class=meta>Posted at &mdash; Dec 9, 2019</div>
+</div>
+<div class=markdown>
+<p>This is a very straight forward article. If you work with Node.JS a lot then there is a high possibility that you are familiar with <a href=https://www.npmjs.com/package/multer>multer</a>. If you do not know about it then this line for you (taken from official repository).</p>
+<blockquote>
+<p>Multer is a node.js middleware for handling <code>multipart/form-data</code>, which is primarily used for uploading files. It is written on top of <a href=https://github.com/mscdex/busboy>busboy</a> for maximum efficiency.</p>
+</blockquote>
+<p><strong>Important:</strong> <em>Multer will not process any form which is not multipart (<code>multipart/form-data</code>).</em></p>
+<h2 id=the-problem>The problem</h2>
+<p>A few days back I was roaming around stackoverflow and found a question where the author wanted to <em>upload same file in different destination using multer</em>. The problem is very straight forward and so does the solution is.</p>
+<figure class="kg-card kg-bookmark-card">
+<a href=__GHOST_URL__/nodejs-worker-thread-json-parse/ class=kg-bookmark-container>
+<div class=kg-bookmark-content>
+<div class=kg-bookmark-title>NodeJS worker thread. Blocking task without blocking event loop</div>
+<div class=kg-bookmark-description>Use nodejs worker thread to handle CPU intensive task without blocking the main thread. JSON parsing using nodejs worker thread.</div>
+<div class=kg-bookmark-metadata>
+<img src=__GHOST_URL__/favicon.png class=kg-bookmark-icon>
+<span class=kg-bookmark-author>Dijkstra</span>
+<span class=kg-bookmark-publisher>Another Dev</span>
+</div>
+</div>
+<div class=kg-bookmark-thumbnail>
+<img src=__GHOST_URL__/content/images/size/w100/2019/12/nerd.png>
+</div>
+</a>
+</figure>
+<h2 id=the-solution>The solution</h2>
+<p>I have created a simple **<code>express</code> ** to demonstrate the usage of it.</p>
+<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> app <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#34;express&#34;</span>)();
+<span style=color:#268bd2>const</span> multer  <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;multer&#39;</span>)
+
+<span style=color:#268bd2>const</span> storageA <span style=color:#719e07>=</span> multer.diskStorage({
+  destination<span style=color:#719e07>:</span> <span style=color:#268bd2>function</span> (req, file, cb) {<span style=color:#2aa198>&#39;);
+</span><span style=color:#2aa198>    cb(null, &#39;</span>.<span style=color:#719e07>/</span>xuploads<span style=color:#719e07>/</span><span style=color:#2aa198>&#39;)
+</span><span style=color:#2aa198>  },
+</span><span style=color:#2aa198>})
+</span><span style=color:#2aa198>
+</span><span style=color:#2aa198>const storageB = multer.diskStorage({
+</span><span style=color:#2aa198>  destination: function (req, file, cb) {
+</span><span style=color:#2aa198>    cb(null, &#39;</span>.<span style=color:#719e07>/</span>yuploads<span style=color:#719e07>/</span><span style=color:#2aa198>&#39;)
+</span><span style=color:#2aa198>  },
+</span><span style=color:#2aa198>})
+</span><span style=color:#2aa198>
+</span><span style=color:#2aa198>const destA = multer({ storage: storageA })
+</span><span style=color:#2aa198>const destB = multer({ storage: storageB })
+</span><span style=color:#2aa198>
+</span><span style=color:#2aa198>function fileUpload(req, res, next) {
+</span><span style=color:#2aa198>  destA.single(&#39;</span>file<span style=color:#2aa198>&#39;)(req, res, next);
+</span><span style=color:#2aa198>  destB.single(&#39;</span>file&#39;)(req, res, next);
+  next();
+}
+
+app.post(<span style=color:#2aa198>&#34;/&#34;</span>, fileUpload, (req, res) =&gt; {
+  res.send(<span style=color:#2aa198>&#34;Received file&#34;</span>);
+});
+
+
+app.listen(<span style=color:#2aa198>3000</span>, () =&gt; {
+  console.log(<span style=color:#2aa198>&#34;Server started&#34;</span>);
+});
+
+</code></pre></div><p>If you run the above code and send a <strong>multipart</strong> request to <code>localhost:3000</code> then you will see that two directory has been created named <code>xuploads</code> and <code>yuploads</code>. Inside those folders you will see the file that you have uploaded.</p>
+<h2 id=usecase>Usecase</h2>
+<p>I never had such requrements where I had to upload the same file to multiple destinations. The question&rsquo;s author wanted to upload the file to both <code>database</code> and <code>file system</code>.</p>
+</div>
+<div class=post-tags>
+<nav class="nav tags">
+<ul class=flat>
+<li><a href=/tags/node.js>Node.JS</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="footer wrapper">
+<nav class=nav>
+<div> © Copyright notice | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
+</nav>
+</div>
+<script>feather.replace()</script>
+</body>
+</html>

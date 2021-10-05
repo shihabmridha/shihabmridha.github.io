@@ -1,0 +1,188 @@
+<!doctype html><html>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge"><title>NodeJS worker threads. Handle CPU intensive task without blocking the event loop - Yet another software engineer</title><link rel=icon type=image/png href=icons/myicon.png><meta name=viewport content="width=device-width,initial-scale=1">
+<meta property="og:title" content="NodeJS worker threads. Handle CPU intensive task without blocking the event loop">
+<meta property="og:description" content="Use nodejs worker thread to handle CPU intensive task without blocking the main thread. JSON parsing using nodejs worker thread.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://anotherdev.xyz/posts/nodejs-worker-thread-json-parse/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2019-11-29T12:47:05+00:00">
+<meta property="article:modified_time" content="2019-11-29T12:47:05+00:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="NodeJS worker threads. Handle CPU intensive task without blocking the event loop">
+<meta name=twitter:description content="Use nodejs worker thread to handle CPU intensive task without blocking the main thread. JSON parsing using nodejs worker thread.">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel=stylesheet>
+<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/normalize.css>
+<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/main.css>
+<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/custom.css>
+<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/dark.css media="(prefers-color-scheme: dark)">
+<script src=https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js></script>
+<script src=https://anotherdev.xyz/js/main.js></script>
+</head>
+<body>
+<div class="container wrapper post">
+<div class=header>
+<base href=https://anotherdev.xyz/>
+<h1 class=site-title><a href=https://anotherdev.xyz/>Yet another software engineer</a></h1>
+<div class=site-description><h2>My thoughts are my own</h2><nav class="nav social">
+<ul class=flat><a href=https://github.com/shihabmridha title=Github><i data-feather=github></i></a><a href=https://twitter.com/shihabmridha title=Twitter><i data-feather=twitter></i></a></ul>
+</nav>
+</div>
+<nav class=nav>
+<ul class=flat>
+<li>
+<a href=/>Home</a>
+</li>
+<li>
+<a href=/posts>All posts</a>
+</li>
+<li>
+<a href=/about>About</a>
+</li>
+<li>
+<a href=/tags>Tags</a>
+</li>
+</ul>
+</nav>
+</div>
+<div class=post-header>
+<h1 class=title>NodeJS worker threads. Handle CPU intensive task without blocking the event loop</h1>
+<div class=meta>Posted at &mdash; Nov 29, 2019</div>
+</div>
+<div class=markdown>
+<blockquote>
+<p>Parsing JSON using worker_thread would <a href="https://news.ycombinator.com/item?id=21007207">not technically be benificial</a>. The below article is just to demonstrate how you can utilize worker_threads in Node.JS</p>
+</blockquote>
+<p>In my recent project, I had a task where a user would be able to import data. Data will be in JSON format. The file size could be as large as 200MB. So, the challenge was to parse a large JSON file. Importing a file is a simple and typical operation but, when we are talking about Node.JS we have to be very careful about it. Because uploading the large file in the system is not the issue. The issue is parsing the large file. JSON parsing is a <strong>CPU intensive task</strong>. This means, while parsing the JSON, the system will not be able to perform any other task (ex: response to other requests). Why is that? Because JSON.parse() function will block the main thread from performing other operations. In other words, the <strong>event loop</strong> will not respond until the JSON.parse() is done with it. This is a very important concept to understand. Here is an official article about <a href=https://nodejs.org/ru/docs/guides/dont-block-the-event-loop/>why you should not block the event loop</a>. You will find some recommendations about parsing JSON in that official article as well.</p>
+<h2 id=how-to-parse-json-without-blocking-the-event-loop-in-nodejs>How to parse JSON without blocking the event loop in Node.JS?</h2>
+<p>So, the main goal was to parse large JSON files without affecting the main thread aka event loop.</p>
+<h3 id=possible-solutions>Possible solutions</h3>
+<ul>
+<li>Asynchronous JSON parsing using Big-friendly JSON (BFJ) (recommended)</li>
+<li>Worker threads <strong><em>(for the sake of this article)</em></strong></li>
+</ul>
+<p>I already had a solution in my mind which was stream parsing the JSON using a very popular module named <a href=https://www.npmjs.com/package/bfj>BFJ aka Big-friendly JSON</a>. BFJ is <strong>not as fast as** <code>JSON.parse()</code> function because it parses some data then let the event loop handle some other tasks. I have implemented it anyway and let the client test it. In my development environment (Macbook pro 2015 with 16GB memory) BFJ took 7-8 seconds to parse 20MB of data. I thought I might use <strong>_worker_threads_** to offload the task to some other thread. The Node.JS </strong><em>worker threads</em></strong><a href=https://nodejs.org/api/worker_threads.html></a> module is already stable.</p>
+<figure class="kg-card kg-bookmark-card">
+<a href=__GHOST_URL__/promise-all-runs-in-parallel/ class=kg-bookmark-container>
+<div class=kg-bookmark-content>
+<div class=kg-bookmark-title>Does Promise.all() run things in parallel?</div>
+<div class=kg-bookmark-description>Things will run concurrently in single core CPU and will run in parallel in multi core CPU. It’s main task is to wait until all the promises that are passed to it are resolved.</div>
+<div class=kg-bookmark-metadata>
+<img src=__GHOST_URL__/favicon.png class=kg-bookmark-icon>
+<span class=kg-bookmark-author>Dijkstra</span>
+<span class=kg-bookmark-publisher>Another Dev</span>
+</div>
+</div>
+<div class=kg-bookmark-thumbnail>
+<img src=__GHOST_URL__/content/images/size/w100/2019/12/nerd.png>
+</div>
+</a>
+</figure>
+<h2 id=worker-threads>Worker threads</h2>
+<p>From documentation:</p>
+<blockquote>
+<p>The <code>worker_threads</code> module enables the use of threads that execute JavaScript in parallel.</p>
+</blockquote>
+<p>This is what we need, right? My main program will run normally and I will offload the JSON parsing task to some other threads. So, lets do this. First thing first, import necessary stuff and create a new thread.</p>
+<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> { Worker, isMainThread } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;worker_threads&#39;</span>);
+
+<span style=color:#268bd2>let</span> worker;
+<span style=color:#719e07>if</span> (isMainThread) {
+    worker <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> Worker(<span style=color:#2aa198>__</span>dirname <span style=color:#719e07>+</span> <span style=color:#2aa198>&#39;/worker.js&#39;</span>);
+    
+    worker.on(<span style=color:#2aa198>&#39;message&#39;</span>, (data) =&gt; {
+      <span style=color:#586e75>// &#39;data&#39; contains the parsed JSON sent by worker thread
+</span><span style=color:#586e75></span>      <span style=color:#586e75>// Do something with data
+</span><span style=color:#586e75></span>    });
+    
+    worker.on(<span style=color:#2aa198>&#39;error&#39;</span>, (error) =&gt; {
+      <span style=color:#586e75>// Logging error caused by worker thread
+</span><span style=color:#586e75></span>      console.log(error.message);
+    });
+    
+    worker.on(<span style=color:#2aa198>&#39;exit&#39;</span>, (code) =&gt; {
+        <span style=color:#719e07>if</span> (code <span style=color:#719e07>!==</span> <span style=color:#2aa198>0</span>)
+            <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> <span style=color:#b58900>Error</span>(<span style=color:#586e75>`Worker stopped with exit code </span><span style=color:#2aa198>${</span>code<span style=color:#2aa198>}</span><span style=color:#586e75>`</span>);
+        <span style=color:#719e07>else</span>
+            logger.info(<span style=color:#2aa198>&#39;Worker stopped &#39;</span> <span style=color:#719e07>+</span> code);
+    });
+}
+</code></pre></div><p>In the code above we are checking that if we are currently in main thread or not. If we are in main thread then create another thread. Also, listening to a few ( <code>exit</code>, <code>message</code>, <code>error</code>) events. <em>The <code>exit</code> event callback would get executed when the worker thread exited by an error or manually being exited (Example: <code>process.exit(1)</code>). The <code>message</code> event callback will get executed when the worker thread sends some data/message to main thread. And finally, the <code>error</code> callback will get executed when the worker thread encounters an error.</em></p>
+<blockquote>
+<p>The above code will run in main thread.</p>
+</blockquote>
+<p>Notice the <strong>line number 6</strong>. It is one of the most important part. We have created a new thread but what would the thread do? <em>Line number 6 defines which task to perform.</em> We have addressed a file named <code>worker.js</code>. Let&rsquo;s take a look at that file.</p>
+<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> { isMainThread, parentPort } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;worker_threads&#39;</span>);
+
+<span style=color:#719e07>if</span> (<span style=color:#719e07>!</span>isMainThread) {
+	parentPort.on(<span style=color:#2aa198>&#39;message&#39;</span>, (data) =&gt; {
+    	<span style=color:#586e75>// &#39;data&#39; contains the payload sent by main thread
+</span><span style=color:#586e75></span>        <span style=color:#268bd2>const</span> parsedJSON <span style=color:#719e07>=</span> JSON.parse(data);
+        
+        <span style=color:#586e75>// Send data back to main thread
+</span><span style=color:#586e75></span>        parentPort.postMessage(parsedJSON);
+    }
+}
+</code></pre></div><p>Unlike the main thread, we are now checking if we are in worker threads. If yes then listen to the <code>message</code> event. Notice the usage of <code>parentPort</code>. It is the bridge between main thread and worker thread. <em>The <code>message</code> event callback will get executed when the worker thread receives any message/data from main thread.</em></p>
+<p>If you notice the above <strong>app.js</strong> and <strong>worker.js</strong> file carefully then you will see we are not sending any data to worker thread yet. To send a message or some data to worker thread, from main thread we have to use <code>postMessage</code> function like this <code>worker.postMessage(payload)</code>. So finally, the main.js file would look like this.</p>
+<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> { Worker, isMainThread } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;worker_threads&#39;</span>);
+
+<span style=color:#268bd2>let</span> worker;
+<span style=color:#719e07>if</span> (isMainThread) {
+    worker <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> Worker(<span style=color:#2aa198>__</span>dirname <span style=color:#719e07>+</span> <span style=color:#2aa198>&#39;/worker.js&#39;</span>);
+    
+    worker.on(<span style=color:#2aa198>&#39;message&#39;</span>, (data) =&gt; {
+      <span style=color:#586e75>// &#39;data&#39; contains the parsed JSON sent by worker thread
+</span><span style=color:#586e75></span>      <span style=color:#586e75>// Do something with data
+</span><span style=color:#586e75></span>    });
+    
+    worker.on(<span style=color:#2aa198>&#39;error&#39;</span>, (error) =&gt; {
+      <span style=color:#586e75>// Logging error caused by worker thread
+</span><span style=color:#586e75></span>      console.log(error.message);
+    });
+    
+    worker.on(<span style=color:#2aa198>&#39;exit&#39;</span>, (code) =&gt; {
+        <span style=color:#719e07>if</span> (code <span style=color:#719e07>!==</span> <span style=color:#2aa198>0</span>)
+            <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> <span style=color:#b58900>Error</span>(<span style=color:#586e75>`Worker stopped with exit code </span><span style=color:#2aa198>${</span>code<span style=color:#2aa198>}</span><span style=color:#586e75>`</span>);
+        <span style=color:#719e07>else</span>
+            logger.info(<span style=color:#2aa198>&#39;Worker stopped &#39;</span> <span style=color:#719e07>+</span> code);
+    });
+}
+
+<span style=color:#586e75>// Assume we have an endpoint that receive a JSON formated data as file
+</span><span style=color:#586e75></span>app.post(<span style=color:#2aa198>&#39;/upload&#39;</span>, multer({...}).singe(<span style=color:#2aa198>&#39;data&#39;</span>), (req, res) =&gt; {
+    <span style=color:#586e75>// Read file sent by user
+</span><span style=color:#586e75></span>	fs.readFile(req.file, (data) =&gt; {
+        <span style=color:#586e75>// Send the data to worker thread
+</span><span style=color:#586e75></span>    	worker.postMessage(data);
+
+        res.send(<span style=color:#2aa198>&#39;We are processing your file.&#39;</span>);
+    });
+});
+</code></pre></div><h2 id=full-data-flow>Full data flow</h2>
+<p>Let&rsquo;s assume our app has a REST endpoint that receives a file. The file contains texts in valid JSON format that we will parse and do some processing later. In our final <strong>main.js</strong> file, first we are reading the file and then sending the data to our worker thread (<strong>main.js,</strong> <strong>line 30</strong>). This data is received by the worker thread (<strong>worker.js, line 4</strong>) and <code>message</code> event gets executed. Worker thread runs the <code>JSON.parse()</code> and sends the data back to main thread (<strong>worker.js, line 9</strong>). When main thread receives the parsed JSON data the <code>message</code> event gets emitted and it&rsquo;s callback gets executed (<strong>main.js, line 7</strong>). There you have your parsed JSON data. Do the necessary processing now.</p>
+<p>From Node&rsquo;s official documentation:</p>
+<blockquote>
+<p>In actual practice, use a pool of Workers instead for these kinds of tasks. Otherwise, the overhead of creating Workers would likely exceed their benefit.</p>
+</blockquote>
+<p>When you transfer data from a worker thread to the main thread, the data gets copied. To prevent copy of the data you have to use either <code>ArrayBuffer</code> or <code>SharedArrayBuffer</code>. So in our case, when we transfer parsed JSON from worker thread to main thread it gets copied (NodeJS implicitly stringify the data from worker and send it to main thread and then call parse again). <strong>Which means, we do not get any benefit!</strong></p>
+<h2 id=conclusion>Conclusion</h2>
+<p>Since I was not getting any benefit from worker_threads, I had to stick with BFJ. The main use of worker threads is to enable the use of threads in NodeJS so that user can perform CPU-intensive JavaScript operations. Worker threads will not help that much with I/O intensive work. NodeJS&rsquo;s default non-blocking I/O is more efficient in that case.</p>
+</div>
+<div class=post-tags>
+<nav class="nav tags">
+<ul class=flat>
+<li><a href=/tags/node.js>Node.JS</a></li>
+<li><a href=/tags/worker-thread>Worker thread</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="footer wrapper">
+<nav class=nav>
+<div> © Copyright notice | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
+</nav>
+</div>
+<script>feather.replace()</script>
+</body>
+</html>

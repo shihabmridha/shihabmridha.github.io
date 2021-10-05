@@ -1,0 +1,126 @@
+<!doctype html><html>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge"><title>Does Promise.all() run tasks in parallel? - Yet another software engineer</title><link rel=icon type=image/png href=icons/myicon.png><meta name=viewport content="width=device-width,initial-scale=1">
+<meta property="og:title" content="Does Promise.all() run tasks in parallel?">
+<meta property="og:description" content="Things will run concurrently in single core CPU and will run in parallel in multi core CPU. It's main task is to wait until all the promises that are passed to it are resolved.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://anotherdev.xyz/posts/promise-all-runs-in-parallel/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2019-10-30T07:37:34+00:00">
+<meta property="article:modified_time" content="2019-10-30T07:37:34+00:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Does Promise.all() run tasks in parallel?">
+<meta name=twitter:description content="Things will run concurrently in single core CPU and will run in parallel in multi core CPU. It's main task is to wait until all the promises that are passed to it are resolved.">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel=stylesheet>
+<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/normalize.css>
+<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/main.css>
+<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/custom.css>
+<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/dark.css media="(prefers-color-scheme: dark)">
+<script src=https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js></script>
+<script src=https://anotherdev.xyz/js/main.js></script>
+</head>
+<body>
+<div class="container wrapper post">
+<div class=header>
+<base href=https://anotherdev.xyz/>
+<h1 class=site-title><a href=https://anotherdev.xyz/>Yet another software engineer</a></h1>
+<div class=site-description><h2>My thoughts are my own</h2><nav class="nav social">
+<ul class=flat><a href=https://github.com/shihabmridha title=Github><i data-feather=github></i></a><a href=https://twitter.com/shihabmridha title=Twitter><i data-feather=twitter></i></a></ul>
+</nav>
+</div>
+<nav class=nav>
+<ul class=flat>
+<li>
+<a href=/>Home</a>
+</li>
+<li>
+<a href=/posts>All posts</a>
+</li>
+<li>
+<a href=/about>About</a>
+</li>
+<li>
+<a href=/tags>Tags</a>
+</li>
+</ul>
+</nav>
+</div>
+<div class=post-header>
+<h1 class=title>Does Promise.all() run tasks in parallel?</h1>
+<div class=meta>Posted at &mdash; Oct 30, 2019</div>
+</div>
+<div class=markdown>
+<p><strong><em>TL;DR</em></strong></p>
+<p>A big <strong>No!</strong> More accurately, it <strong>depends on the CPU</strong>.</p>
+<hr>
+<p>The promise API is a blessing for JavaScript developers. It makes writing asynchronous JavaScript a lot easier. Go to hell <strong>callback</strong>! The problem is, like all other JavaScript concepts promise confuses a lot of people. I am not going to talk about promise in this article. There are tons of articles related to promise.</p>
+<p>There is a misconception about <strong><a href=https://en.wikipedia.org/wiki/Concurrency_(computer_science)>concurrency</a></strong> and <strong>parallelism</strong> in the JavaScript world. When the promise was introduced people started to think that now everything is now going to run in parallel. I have no idea where they got this idea of parallelism.</p>
+<h3 id=lets-talk-about-some-important--fundamentals>Let&rsquo;s talk about some <strong>important</strong> <strong>fundamentals</strong></h3>
+<p>A CPU can not perform multiple tasks at the same time. So, it means it is not possible to get parallelism in a single-core CPU. Then how does my single-core CPU perform multiple tasks at the same time? Well, there are a lot of things going on in the operating system but there are two main concepts. One is <a href=https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)>multi-threading</a> and another one is <a href=https://en.wikipedia.org/wiki/Context_switch>context switching</a>. Multiple tasks are handled by multiple threads. What happens is the CPU performs one task (using a thread) for a certain time and then pause the current task and move on to the next task (using another thread) and start processing it. This switching happens so fast that you think everything is running in parallel even though you are using a single-core CPU.</p>
+<blockquote>
+<p>A CPU can not perform multiple tasks at the same time.</p>
+</blockquote>
+<h3 id=whats-up-with-promiseall>What&rsquo;s up with Promise.all</h3>
+<p>So, now you understand why <code>Promise.all</code> doesn&rsquo;t guarantee you to run things in parallel. In fact, <code>Promise.all</code> is only reliable for waiting until all the promises passed to it are done. Its job is to ensure that no promises get passed until they are done with their job. Is it confusing? Let&rsquo;s try with some examples.</p>
+<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> promise1 <span style=color:#719e07>=</span> getResultsFromDatabase(user1);
+<span style=color:#268bd2>const</span> promise2 <span style=color:#719e07>=</span> getResultsFromDatabase(user2);
+
+<span style=color:#268bd2>const</span> [res1, res2] <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#b58900>Promise</span>.all(promise1, promise2);
+processData(res1, res2);
+</code></pre></div><p>Take a look at the code above carefully. Both <code>getResultsFromDatabase</code> function started executing before executing the 3rd line. The third line ensures that <code>processData</code> doesn&rsquo;t get executed before both of the promises are done.</p>
+<p>You can achieve the same result without using <code>Promise.all</code>. Example:</p>
+<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> promise1 <span style=color:#719e07>=</span> getResultsFromDatabase(user1);
+<span style=color:#268bd2>const</span> promise2 <span style=color:#719e07>=</span> getResultsFromDatabase(user2);
+
+<span style=color:#268bd2>const</span> res1 <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> promise1;
+<span style=color:#268bd2>const</span> res2 <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> promise2;
+
+processData(res1, res2);
+</code></pre></div><p>The same thing happens here. <code>getResultsFromDatabase</code> gets executed immediately and then waits for them to resolve.</p>
+<figure class="kg-card kg-bookmark-card">
+<a href=__GHOST_URL__/typescript-nodejs-get-start/ class=kg-bookmark-container>
+<div class=kg-bookmark-content>
+<div class=kg-bookmark-title>TypeScript with NodeJS. Type safety with better suggestions</div>
+<div class=kg-bookmark-description>End of the day everyone wants type safety in their code. Better type safety means less error in production. TypeScript provides type safety to JavaScript and it plays very well with Node.JS</div>
+<div class=kg-bookmark-metadata>
+<img src=__GHOST_URL__/favicon.png class=kg-bookmark-icon>
+<span class=kg-bookmark-author>Dijkstra</span>
+<span class=kg-bookmark-publisher>Another Dev</span>
+</div>
+</div>
+<div class=kg-bookmark-thumbnail>
+<img src=__GHOST_URL__/content/images/size/w100/2019/12/nerd.png>
+</div>
+</a>
+</figure>
+<h3 id=how-would-promiseall-behave>How would Promise.all behave?</h3>
+<p>Depending on the CPU it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel.</p>
+<p><code>Promise.all</code> will return a reject promise if any of the given promises rejects. But, the reject will contain the reason for the first reject event if multiple reject happens.</p>
+<p><strong>But when is it actually gonna run in parallel?</strong></p>
+<p>Let&rsquo;s assume, browser API has a function named <strong>doStuff</strong>. When you call the function the browser picks a thread from its pool and executes the function in that thread.</p>
+<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>await</span> <span style=color:#b58900>Promise</span>.all([
+  doStuff(),
+  doStuff()
+])
+</code></pre></div><p>In the above snippet both the function would run in parallel if the machine has multiple CPUs. This is true for Node.JS as well. Instead of browser API, NodeJS has its own API.</p>
+<h3 id=conclusion>Conclusion</h3>
+<p>JavaScript runtime is single-threaded. We do not have access to thread in JavaScript. Even if you have multi-core CPU you still can&rsquo;t run tasks in parallel using JavaScript. But, the browser/NodeJS uses C/C++ (!) where they have access to thread. So, they can achieve parallelism.</p>
+</div>
+<div class=post-tags>
+<nav class="nav tags">
+<ul class=flat>
+<li><a href=/tags/javascript>JavaScript</a></li>
+<li><a href=/tags/concurrency>Concurrency</a></li>
+<li><a href=/tags/parallelism>Parallelism</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="footer wrapper">
+<nav class=nav>
+<div> © Copyright notice | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
+</nav>
+</div>
+<script>feather.replace()</script>
+</body>
+</html>
