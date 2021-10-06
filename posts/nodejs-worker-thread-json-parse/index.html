@@ -62,22 +62,6 @@
 <li>Worker threads <strong><em>(for the sake of this article)</em></strong></li>
 </ul>
 <p>I already had a solution in my mind which was stream parsing the JSON using a very popular module named <a href=https://www.npmjs.com/package/bfj>BFJ aka Big-friendly JSON</a>. BFJ is <strong>not as fast as** <code>JSON.parse()</code> function because it parses some data then let the event loop handle some other tasks. I have implemented it anyway and let the client test it. In my development environment (Macbook pro 2015 with 16GB memory) BFJ took 7-8 seconds to parse 20MB of data. I thought I might use <strong>_worker_threads_** to offload the task to some other thread. The Node.JS </strong><em>worker threads</em></strong><a href=https://nodejs.org/api/worker_threads.html></a> module is already stable.</p>
-<figure class="kg-card kg-bookmark-card">
-<a href=__GHOST_URL__/promise-all-runs-in-parallel/ class=kg-bookmark-container>
-<div class=kg-bookmark-content>
-<div class=kg-bookmark-title>Does Promise.all() run things in parallel?</div>
-<div class=kg-bookmark-description>Things will run concurrently in single core CPU and will run in parallel in multi core CPU. It’s main task is to wait until all the promises that are passed to it are resolved.</div>
-<div class=kg-bookmark-metadata>
-<img src=__GHOST_URL__/favicon.png class=kg-bookmark-icon>
-<span class=kg-bookmark-author>Dijkstra</span>
-<span class=kg-bookmark-publisher>Another Dev</span>
-</div>
-</div>
-<div class=kg-bookmark-thumbnail>
-<img src=__GHOST_URL__/content/images/size/w100/2019/12/nerd.png>
-</div>
-</a>
-</figure>
 <h2 id=worker-threads>Worker threads</h2>
 <p>From documentation:</p>
 <blockquote>
@@ -180,7 +164,7 @@
 </div>
 <div class="footer wrapper">
 <nav class=nav>
-<div> © Copyright notice | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
+<div> © Another Dev | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
 </nav>
 </div>
 <script>feather.replace()</script>

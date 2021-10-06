@@ -53,22 +53,6 @@
 <h2 id=problem-summary>Problem summary</h2>
 <p>I was working on a react native project where I had to create a <code>.csv</code> file and store it in external/internal storage of the device. So that the user can transfer the file via USB and do someting with it. My target platform was <strong>Android</strong>. Everything was okay untill I tried to access my generate <code>.csv</code> file via USB. The file was in the device but I couldn&rsquo;t see it from my computer. Very strange problem. I can view the file from my device&rsquo;s file explorer but can not access it from computer.</p>
 <p>After a few minutes of googling I have found that this is a <strong>very known problem of MTP protocol</strong>. I had to restart the device to rescan the file system and access it from computer.</p>
-<figure class="kg-card kg-bookmark-card">
-<a href=__GHOST_URL__/react-native-smtp-send-email/ class=kg-bookmark-container>
-<div class=kg-bookmark-content>
-<div class=kg-bookmark-title>React Native SMTP. Send Email in Background (Android Only)</div>
-<div class=kg-bookmark-description>React native SMTP is a SMTP client for react-native. It can be used to send emails in the background using the SMTP protocol. This module only supports Android.</div>
-<div class=kg-bookmark-metadata>
-<img src=__GHOST_URL__/favicon.png class=kg-bookmark-icon>
-<span class=kg-bookmark-author>Dijkstra</span>
-<span class=kg-bookmark-publisher>Another Dev</span>
-</div>
-</div>
-<div class=kg-bookmark-thumbnail>
-<img src=__GHOST_URL__/content/images/size/w100/2019/12/nerd.png>
-</div>
-</a>
-</figure>
 <h2 id=solution>Solution</h2>
 <p>Restarting is not a solution. So, the solution was to manually run the <a href=https://developer.android.com/reference/android/media/MediaScannerConnection>MediaScanner</a> for scanning of the file system. The file <a href=https://github.com/itinance/react-native-fs#android-only-scanfilepath-string-promisestring>system module for react native</a> has a function named <code>scanFile</code> which is a JavaScript binding.</p>
 <h2 id=example-usage>Example usage</h2>
@@ -90,7 +74,7 @@ RNFS.touch(RNFS.DocumentDirectoryPath <span style=color:#719e07>+</span> <span s
 </div>
 <div class="footer wrapper">
 <nav class=nav>
-<div> © Copyright notice | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
+<div> © Another Dev | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
 </nav>
 </div>
 <script>feather.replace()</script>

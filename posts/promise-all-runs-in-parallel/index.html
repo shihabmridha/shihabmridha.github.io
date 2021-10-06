@@ -77,22 +77,6 @@ processData(res1, res2);
 
 processData(res1, res2);
 </code></pre></div><p>The same thing happens here. <code>getResultsFromDatabase</code> gets executed immediately and then waits for them to resolve.</p>
-<figure class="kg-card kg-bookmark-card">
-<a href=__GHOST_URL__/typescript-nodejs-get-start/ class=kg-bookmark-container>
-<div class=kg-bookmark-content>
-<div class=kg-bookmark-title>TypeScript with NodeJS. Type safety with better suggestions</div>
-<div class=kg-bookmark-description>End of the day everyone wants type safety in their code. Better type safety means less error in production. TypeScript provides type safety to JavaScript and it plays very well with Node.JS</div>
-<div class=kg-bookmark-metadata>
-<img src=__GHOST_URL__/favicon.png class=kg-bookmark-icon>
-<span class=kg-bookmark-author>Dijkstra</span>
-<span class=kg-bookmark-publisher>Another Dev</span>
-</div>
-</div>
-<div class=kg-bookmark-thumbnail>
-<img src=__GHOST_URL__/content/images/size/w100/2019/12/nerd.png>
-</div>
-</a>
-</figure>
 <h3 id=how-would-promiseall-behave>How would Promise.all behave?</h3>
 <p>Depending on the CPU it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel.</p>
 <p><code>Promise.all</code> will return a reject promise if any of the given promises rejects. But, the reject will contain the reason for the first reject event if multiple reject happens.</p>
@@ -118,7 +102,7 @@ processData(res1, res2);
 </div>
 <div class="footer wrapper">
 <nav class=nav>
-<div> © Copyright notice | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
+<div> © Another Dev | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
 </nav>
 </div>
 <script>feather.replace()</script>
