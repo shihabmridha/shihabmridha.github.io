@@ -5,25 +5,25 @@
 <meta property="og:title" content="Cloudflare, Nginx, Letsencrypt SSL setup. Too many redirect issue. Took three hours to solve. (Silly mistake)">
 <meta property="og:description" content="A very little knowledge about Cloudflare's SSL feature caused too many redirect issue and took three hours to find and fix.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://anotherdev.xyz/posts/cloudflare-nginx-letsencrypt-ssl-too-many-redirect/"><meta property="article:section" content="posts">
+<meta property="og:url" content="https://shihabmridha.github.io/posts/cloudflare-nginx-letsencrypt-ssl-too-many-redirect/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2019-10-31T10:39:19+00:00">
 <meta property="article:modified_time" content="2019-10-31T10:39:19+00:00">
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="Cloudflare, Nginx, Letsencrypt SSL setup. Too many redirect issue. Took three hours to solve. (Silly mistake)">
 <meta name=twitter:description content="A very little knowledge about Cloudflare's SSL feature caused too many redirect issue and took three hours to find and fix.">
 <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel=stylesheet>
-<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/normalize.css>
-<link rel=stylesheet type=text/css media=screen href=https://anotherdev.xyz/css/main.css>
-<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/custom.css>
-<link rel=stylesheet type=text/css href=https://anotherdev.xyz/css/dark.css media="(prefers-color-scheme: dark)">
+<link rel=stylesheet type=text/css media=screen href=https://shihabmridha.github.io/css/normalize.css>
+<link rel=stylesheet type=text/css media=screen href=https://shihabmridha.github.io/css/main.css>
+<link rel=stylesheet type=text/css href=https://shihabmridha.github.io/css/custom.css>
+<link rel=stylesheet type=text/css href=https://shihabmridha.github.io/css/dark.css media="(prefers-color-scheme: dark)">
 <script src=https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js></script>
-<script src=https://anotherdev.xyz/js/main.js></script>
+<script src=https://shihabmridha.github.io/js/main.js></script>
 </head>
 <body>
 <div class="container wrapper post">
 <div class=header>
-<base href=https://anotherdev.xyz/>
-<h1 class=site-title><a href=https://anotherdev.xyz/>Yet another software engineer</a></h1>
+<base href=https://shihabmridha.github.io/>
+<h1 class=site-title><a href=https://shihabmridha.github.io/>Yet another software engineer</a></h1>
 <div class=site-description><h2>My thoughts are my own</h2><nav class="nav social">
 <ul class=flat><a href=https://github.com/shihabmridha title=Github><i data-feather=github></i></a><a href=https://twitter.com/shihabmridha title=Twitter><i data-feather=twitter></i></a></ul>
 </nav>
@@ -68,7 +68,7 @@
 <img src=__GHOST_URL__/content/images/2019/10/ZktFr.png>
 </div>
 </a>
-<figcaption>{map[author:Dijkstra caption:Concurrency Vs Parallelism again! description:Things will run concurrently in single core CPU and will run in parallel in multi core CPU. It’s main task is to wait until all the promises that are passed to it are resolved. icon:__GHOST_URL__/favicon.png publisher:Another Dev thumbnail:__GHOST_URL__/content/images/2019/10/ZktFr.png title:Is Promise.all() run things in parallel? url:__GHOST_URL__/promise-all-runs-in-parallel/] 0xc000778d00 &lt;nil> bookmark true 0 {0 {0 0}} 2532 { 0 0 0} &lt;nil>}</figcaption>
+<figcaption>{map[author:Dijkstra caption:Concurrency Vs Parallelism again! description:Things will run concurrently in single core CPU and will run in parallel in multi core CPU. It’s main task is to wait until all the promises that are passed to it are resolved. icon:__GHOST_URL__/favicon.png publisher:Another Dev thumbnail:__GHOST_URL__/content/images/2019/10/ZktFr.png title:Is Promise.all() run things in parallel? url:__GHOST_URL__/promise-all-runs-in-parallel/] 0xc0004dfe00 &lt;nil> bookmark true 0 {0 {0 0}} 2532 { 0 0 0} &lt;nil>}</figcaption>
 </figure>
 <p>Ghost provides handy CLI to install SSL and it uses Letsencrypt. Since I was using Cloudflare&rsquo;s DNS, when I hit my website using HTTPS it goes to Cloudflare and Cloudflare redirect it to HTTP since I switched SSL off. Cloudflare redirects to my server using HTTP but my Nginx config redirects every request to HTTPS. It was creating a redirection cycle like the following steps.</p>
 <ol>
