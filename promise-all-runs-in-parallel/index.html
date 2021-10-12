@@ -51,7 +51,7 @@
 </div>
 <div class=markdown>
 <p><strong><em>TL;DR</em></strong></p>
-<p>A big <strong>No!</strong> More accurately, it <strong>depends on the CPU</strong>.</p>
+<p><strong>No!</strong> More accurately, it <strong>depends on various factors</strong>.</p>
 <hr>
 <p>The promise API is a blessing for JavaScript developers. It makes writing asynchronous JavaScript a lot easier. Go to hell <strong>callback</strong>! The problem is, like all other JavaScript concepts promise confuses a lot of people. I am not going to talk about promise in this article. There are tons of articles related to promise.</p>
 <p>There is a misconception about <strong><a href=https://en.wikipedia.org/wiki/Concurrency_(computer_science)>concurrency</a></strong> and <strong>parallelism</strong> in the JavaScript world. When the promise was introduced people started to think that now everything is now going to run in parallel. I have no idea where they got this idea of parallelism.</p>
@@ -78,15 +78,8 @@ processData(res1, res2);
 processData(res1, res2);
 </code></pre></div><p>The same thing happens here. <code>getResultsFromDatabase</code> gets executed immediately and then waits for them to resolve.</p>
 <h3 id=how-would-promiseall-behave>How would Promise.all behave?</h3>
-<p>Depending on the CPU it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel.</p>
+<p>Depending on the &ldquo;Task/CPU&rdquo; it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel for CPU intensive tasks. Most of the modern computers can do parallel I/O. So, it is kind of safe to assume that network call, file read/write etc tasks can run in parallel.</p>
 <p><code>Promise.all</code> will return a reject promise if any of the given promises rejects. But, the reject will contain the reason for the first reject event if multiple reject happens.</p>
-<p><strong>But when is it actually gonna run in parallel?</strong></p>
-<p>Let&rsquo;s assume, browser API has a function named <strong>doStuff</strong>. When you call the function the browser picks a thread from its pool and executes the function in that thread.</p>
-<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>await</span> <span style=color:#b58900>Promise</span>.all([
-  doStuff(),
-  doStuff()
-])
-</code></pre></div><p>In the above snippet both the function would run in parallel if the machine has multiple CPUs. This is true for Node.JS as well. Instead of browser API, NodeJS has its own API.</p>
 <h3 id=conclusion>Conclusion</h3>
 <p>JavaScript runtime is single-threaded. We do not have access to thread in JavaScript. Even if you have multi-core CPU you still can&rsquo;t run tasks in parallel using JavaScript. But, the browser/NodeJS uses C/C++ (!) where they have access to thread. So, they can achieve parallelism.</p>
 </div>
