@@ -14,7 +14,7 @@ title = "Does Promise.all() run tasks in parallel?"
 
 **_TL;DR_**
 
-A big **No!** More accurately, it **depends on the CPU**.
+**No!** More accurately, it **depends on various factors**.
 
 ---
 
@@ -58,22 +58,9 @@ The same thing happens here. `getResultsFromDatabase` gets executed immediately 
 
 ### How would Promise.all behave?
 
-Depending on the CPU it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel.
+Depending on the "Task/CPU" it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel for CPU intensive tasks. Most of the modern computers can do parallel I/O. So, it is kind of safe to assume that network call, file read/write etc tasks can run in parallel.
 
 `Promise.all` will return a reject promise if any of the given promises rejects. But, the reject will contain the reason for the first reject event if multiple reject happens.
-
-**But when is it actually gonna run in parallel?**
-
-Let's assume, browser API has a function named **doStuff**. When you call the function the browser picks a thread from its pool and executes the function in that thread.
-
-```javascript
-await Promise.all([
-  doStuff(),
-  doStuff()
-])
-```
-
-In the above snippet both the function would run in parallel if the machine has multiple CPUs. This is true for Node.JS as well. Instead of browser API, NodeJS has its own API.
 
 ### Conclusion
 
