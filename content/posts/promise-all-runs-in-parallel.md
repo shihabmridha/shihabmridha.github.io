@@ -20,11 +20,12 @@ title = "Does Promise.all() run tasks in parallel?"
 
 The promise API is a blessing for JavaScript developers. It makes writing asynchronous JavaScript a lot easier. Go to hell **callback**! The problem is, like all other JavaScript concepts promise confuses a lot of people. I am not going to talk about promise in this article. There are tons of articles related to promise.
 
-There is a misconception about **[concurrency](https://en.wikipedia.org/wiki/Concurrency_(computer_science))** and **parallelism** in the JavaScript world. When the promise was introduced people started to think that now everything is now going to run in parallel. I have no idea where they got this idea of parallelism.
+There is a misconception about **[concurrency](https://en.wikipedia.org/wiki/Concurrency_(computer_science))** and **parallelism** in the JavaScript world. When the promise was introduced people started to think that now everything is now going to run in parallel. I have found that this is not completely true.
 
-### Let's talk about some **important**  **fundamentals**
+### Let's talk about some **important fundamentals** (briefly)
 
 A CPU can not perform multiple tasks at the same time. So, it means it is not possible to get parallelism in a single-core CPU. Then how does my single-core CPU perform multiple tasks at the same time? Well, there are a lot of things going on in the operating system but there are two main concepts. One is [multi-threading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) and another one is [context switching](https://en.wikipedia.org/wiki/Context_switch). Multiple tasks are handled by multiple threads. What happens is the CPU performs one task (using a thread) for a certain time and then pause the current task and move on to the next task (using another thread) and start processing it. This switching happens so fast that you think everything is running in parallel even though you are using a single-core CPU.
+But, the modern computer has dedicated hardware for I/O (network, file read/write, etc). There is a concept called DMA (direct memory access) that allows the computer to perform I/O without blocking the CPU. This means, when you are dealing with network or reading/writing in the SSD/HDD, your CPU is mostly sitting idle. This is the fundamental concept behind the creation of Node.JS. Now, if you think about it you can achieve parallelism where CPU would do one thing at the same time I/O would do some other thing. 
 
 > A CPU can not perform multiple tasks at the same time.
 
@@ -58,7 +59,7 @@ The same thing happens here. `getResultsFromDatabase` gets executed immediately 
 
 ### How would Promise.all behave?
 
-Depending on the "Task/CPU" it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel for CPU intensive tasks. Most of the modern computers can do parallel I/O. So, it is kind of safe to assume that network call, file read/write etc tasks can run in parallel.
+Depending on the "Task/CPU" it might run in parallel or concurrently or sequentially. We are gonna ignore the hyper-threaded CPU this time. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel for CPU intensive tasks. As explained earlier most of the modern computers can do I/O in parallel. So, it is kind of safe to assume that network call, file read/write etc tasks can run in parallel.
 
 `Promise.all` will return a reject promise if any of the given promises rejects. But, the reject will contain the reason for the first reject event if multiple reject happens.
 
