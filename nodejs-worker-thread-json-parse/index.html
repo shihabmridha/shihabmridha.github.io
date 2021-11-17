@@ -18,6 +18,7 @@
 <link rel=stylesheet type=text/css href=http://anotherdev.xyz/css/dark.css media="(prefers-color-scheme: dark)">
 <script src=https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js></script>
 <script src=http://anotherdev.xyz/js/main.js></script>
+<script>(function(a,c,e,f,d,b){a.hj=a.hj||function(){(a.hj.q=a.hj.q||[]).push(arguments)},a._hjSettings={hjid:1562721,hjsv:6},d=c.getElementsByTagName('head')[0],b=c.createElement('script'),b.async=1,b.src=e+a._hjSettings.hjid+f+a._hjSettings.hjsv,d.appendChild(b)})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=')</script>
 </head>
 <body>
 <div class="container wrapper post">
@@ -61,7 +62,7 @@
 <li>Asynchronous JSON parsing using Big-friendly JSON (BFJ) (recommended)</li>
 <li>Worker threads <strong><em>(for the sake of this article)</em></strong></li>
 </ul>
-<p>I already had a solution in my mind which was stream parsing the JSON using a very popular module named <a href=https://www.npmjs.com/package/bfj>BFJ aka Big-friendly JSON</a>. BFJ is <strong>not as fast as** <code>JSON.parse()</code> function because it parses some data then let the event loop handle some other tasks. I have implemented it anyway and let the client test it. In my development environment (Macbook pro 2015 with 16GB memory) BFJ took 7-8 seconds to parse 20MB of data. I thought I might use <strong>_worker_threads_** to offload the task to some other thread. The Node.JS </strong><em>worker threads</em></strong><a href=https://nodejs.org/api/worker_threads.html></a> module is already stable.</p>
+<p>I already had a solution in my mind which was stream parsing the JSON using a very popular module named <a href=https://www.npmjs.com/package/bfj>BFJ aka Big-friendly JSON</a>. BFJ is <strong>not as fast as</strong> <code>JSON.parse()</code> function because it parses some data then let the event loop handle some other tasks. I have implemented it anyway and let the client test it. In my development environment (Macbook pro 2015 with 16GB memory) BFJ took 7-8 seconds to parse 20MB of data. I thought I might use <strong><em>worker_threads</em></strong> to offload the task to some other thread. The Node.JS <a href=https://nodejs.org/api/worker_threads.html><strong><em>worker threads</em></strong></a> module is already stable.</p>
 <h2 id=worker-threads>Worker threads</h2>
 <p>From documentation:</p>
 <blockquote>
@@ -72,7 +73,7 @@
 
 <span style=color:#268bd2>let</span> worker;
 <span style=color:#719e07>if</span> (isMainThread) {
-    worker <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> Worker(<span style=color:#2aa198>__</span>dirname <span style=color:#719e07>+</span> <span style=color:#2aa198>&#39;/worker.js&#39;</span>);
+    worker <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> Worker(__dirname <span style=color:#719e07>+</span> <span style=color:#2aa198>&#39;/worker.js&#39;</span>);
     
     worker.on(<span style=color:#2aa198>&#39;message&#39;</span>, (data) =&gt; {
       <span style=color:#586e75>// &#39;data&#39; contains the parsed JSON sent by worker thread
@@ -113,7 +114,7 @@
 
 <span style=color:#268bd2>let</span> worker;
 <span style=color:#719e07>if</span> (isMainThread) {
-    worker <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> Worker(<span style=color:#2aa198>__</span>dirname <span style=color:#719e07>+</span> <span style=color:#2aa198>&#39;/worker.js&#39;</span>);
+    worker <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> Worker(__dirname <span style=color:#719e07>+</span> <span style=color:#2aa198>&#39;/worker.js&#39;</span>);
     
     worker.on(<span style=color:#2aa198>&#39;message&#39;</span>, (data) =&gt; {
       <span style=color:#586e75>// &#39;data&#39; contains the parsed JSON sent by worker thread
