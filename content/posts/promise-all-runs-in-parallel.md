@@ -74,7 +74,7 @@ The same thing happens here. `getResultsFromDatabase` gets executed immediately 
 ### How would Promise.all behave?
 Depending on the "Task/CPU" it might run in parallel or concurrently or sequentially. In single-core CPU the promises would run concurrently and in multi-core CPU they can be executed (!) in parallel for CPU intensive tasks. As explained earlier that most of the modern computers can do I/O in parallel. So, it is kind of safe to assume that network call, file read/write, etc tasks can run in parallel with cpu.
 
-### Conclusion
+### Last words
 JavaScript runtime is single-threaded. We do not have access to thread in JavaScript (recent version of NodeJS allows us to create thread using worker_threads module). Even if we have multi-core CPU we still can't run cpu intensive tasks in parallel directly using JavaScript. But, the browser/NodeJS uses C/C++ (!) where they have access to thread. So, they can achieve parallelism (ex: NodeJS's crypto module).
 
 
