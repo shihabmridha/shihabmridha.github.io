@@ -7,7 +7,7 @@ draft = false
 slug = "cloudflare-nginx-letsencrypt-ssl-too-many-redirect"
 summary = "A very little knowledge about Cloudflare's SSL feature caused too many redirect issue and took three hours to find and fix."
 tags = ["Nginx", "Cloudflare", "Letsencrypt"]
-title = "Cloudflare, Nginx, Letsencrypt SSL setup. Too many redirect issue. Took three hours to solve. (Silly mistake)"
+title = "Cloudflare, Nginx, Letsencrypt SSL setup. Too many redirect issue. (Silly mistake)"
 
 +++
 
