@@ -1,260 +1,157 @@
-<!doctype html><html>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge"><title>FeathersJS Refresh Token Implementation - Yet another software engineer</title><link rel=icon type=image/png href=icons/myicon.png><meta name=viewport content="width=device-width,initial-scale=1">
-<meta property="og:title" content="FeathersJS Refresh Token Implementation">
-<meta property="og:description" content="FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh token. In this article we will see how we can implement refresh token feature to our system.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="http://anotherdev.xyz/feathersjs-refresh-token/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2020-07-17T09:29:18+00:00">
-<meta property="article:modified_time" content="2020-07-17T09:29:18+00:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="FeathersJS Refresh Token Implementation">
-<meta name=twitter:description content="FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh token. In this article we will see how we can implement refresh token feature to our system.">
-<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel=stylesheet>
-<link rel=stylesheet type=text/css media=screen href=http://anotherdev.xyz/css/normalize.css>
-<link rel=stylesheet type=text/css media=screen href=http://anotherdev.xyz/css/main.css>
-<link rel=stylesheet type=text/css href=http://anotherdev.xyz/css/custom.css>
-<link rel=stylesheet type=text/css href=http://anotherdev.xyz/css/dark.css media="(prefers-color-scheme: dark)">
-<script src=https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js></script>
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><title>FeathersJS Refresh Token Implementation - Yet another software engineer</title><link rel=icon type=image/png href=icons/myicon.png><meta name=viewport content="width=device-width,initial-scale=1"><meta property="og:title" content="FeathersJS Refresh Token Implementation"><meta property="og:description" content="FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh token. In this article we will see how we can implement refresh token feature to our system."><meta property="og:type" content="article"><meta property="og:url" content="http://anotherdev.xyz/feathersjs-refresh-token/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-07-17T09:29:18+00:00"><meta property="article:modified_time" content="2020-07-17T09:29:18+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="FeathersJS Refresh Token Implementation"><meta name=twitter:description content="FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh token. In this article we will see how we can implement refresh token feature to our system."><link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel=stylesheet><link rel=stylesheet type=text/css media=screen href=http://anotherdev.xyz/css/normalize.css><link rel=stylesheet type=text/css media=screen href=http://anotherdev.xyz/css/main.css><link rel=stylesheet type=text/css href=http://anotherdev.xyz/css/custom.css><link rel=stylesheet type=text/css href=http://anotherdev.xyz/css/dark.css media="(prefers-color-scheme: dark)"><script src=https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js></script>
 <script src=http://anotherdev.xyz/js/main.js></script>
-<script>(function(a,c,e,f,d,b){a.hj=a.hj||function(){(a.hj.q=a.hj.q||[]).push(arguments)},a._hjSettings={hjid:1562721,hjsv:6},d=c.getElementsByTagName('head')[0],b=c.createElement('script'),b.async=1,b.src=e+a._hjSettings.hjid+f+a._hjSettings.hjsv,d.appendChild(b)})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=')</script>
-</head>
-<body>
-<div class="container wrapper post">
-<div class=header>
-<base href=http://anotherdev.xyz/>
-<h1 class=site-title><a href=http://anotherdev.xyz/>Yet another software engineer</a></h1>
-<div class=site-description><h2>My thoughts are my own</h2><nav class="nav social">
-<ul class=flat><a href=https://github.com/shihabmridha title=Github><i data-feather=github></i></a><a href=https://twitter.com/shihabmridha title=Twitter><i data-feather=twitter></i></a></ul>
-</nav>
-</div>
-<nav class=nav>
-<ul class=flat>
-<li>
-<a href=/>Home</a>
-</li>
-<li>
-<a href=/posts>All posts</a>
-</li>
-<li>
-<a href=/about>About</a>
-</li>
-<li>
-<a href=/tags>Tags</a>
-</li>
-</ul>
-</nav>
-</div>
-<div class=post-header>
-<h1 class=title>FeathersJS Refresh Token Implementation</h1>
-<div class=meta>Posted at &mdash; Jul 17, 2020</div>
-</div>
-<div class=markdown>
-<p>FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh_token. In this article we will see how we can implement refresh_token feature to our system.</p>
-<blockquote>
-<p>In the article I will be using Mongoose but the main part should be identical for any ORM you use.</p>
-</blockquote>
-<h3 id=what-feathersjs-gives-you>What FeathersJS gives you</h3>
-<p>After creating a FeathersJS application you will get a file in <strong>src</strong> directory named <code>authentication.js</code>. You can say that this file is the <strong>service</strong> (I believe you know what a service is in FeathersJS) for authentication. In this authentication service the endpoint is defined and also other configurations like which class to use for <em>local-strategy</em> or which class to use for <em>jwt-strategy</em> is defined. By default the file looks like this.</p>
-<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> { AuthenticationService, JWTStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication&#39;</span>);
-<span style=color:#268bd2>const</span> { LocalStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-local&#39;</span>);
-<span style=color:#268bd2>const</span> { expressOauth } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-oauth&#39;</span>);
-
-module.exports <span style=color:#719e07>=</span> app =&gt; {
-  <span style=color:#268bd2>const</span> authentication <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> AuthenticationService(app);
-
-  authentication.register(<span style=color:#2aa198>&#39;jwt&#39;</span>, <span style=color:#719e07>new</span> JWTStrategy());
-  authentication.register(<span style=color:#2aa198>&#39;local&#39;</span>, <span style=color:#719e07>new</span> LocalStrategy());
-
-  app.use(<span style=color:#2aa198>&#39;/authentication&#39;</span>, authentication);
-  app.configure(expressOauth());
-};
-</code></pre></div><p>As you can see from the code above, Feathers uses its built-in <code>AuthenticationService</code> class to instantiate authentication service. For <em>local-strategy</em> it uses <code>LocalStrategy</code> class and for <em>jwt-strategy</em> it uses <code>JWTStrategy</code> class. All the default authentication features/behaviours you get from feathers are defined in those classes. But, the mechanism for refresh token is not built in to Feathers. I will not go deep into how refresh token works because there are tons of articles about it. One thing that I need to mention is, everyone uses a separate endpoint to refresh a token ex: <code>/refresh-token</code> but we are going to use our existing <code>/authentication</code> endpoint to refresh a token. It would make the whole process a lot easier.</p>
-<h3 id=goal-to-achieve>Goal to achieve</h3>
-<ul>
-<li>When user logs in we send a <strong><em>refresh_token</em></strong> along with <em><strong>access_token</strong></em>.</li>
-<li>Allow user to get a new <strong><em>refresh_token</em></strong> and <em><strong>access_token</strong></em> using previously issued valid <strong><em>refresh_token</em></strong>. No login needed this time.</li>
-</ul>
-<h3 id=plan-to-implement>Plan to implement</h3>
-<ul>
-<li>Create a new directory named <code>authentication</code> in <code>src</code> directory.</li>
-<li>Create 2 files named <em>CustomAuthService.js</em> and <em>CustomJwtStrategy.js</em>.</li>
-<li>Create <code>CustomAuthService</code> class that inherits <code>AuthenticationService</code>.</li>
-<li>Override necessary method in our child class to facilitate refresh token feature.</li>
-<li>Create <code>CustomJwtStrategy</code> class that inherits <code>JWTStrategy</code>.</li>
-<li>Override necessary method in our child class to facilitate refresh token feature.</li>
-</ul>
-<p>We don&rsquo;t need to override anything from <code>LocalStrategy</code> class because that class is responsible to handle login using password. Refresh token has noting to do with how we login to the system. One thing to keep in mind that <code>LocalStrategy</code> uses <code>AuthenticationService</code> as well. The <strong>access_token</strong> we get after login is generated using <code>AuthenticationService</code>. That is why we are creating our <code>CustomAuthService</code> to override the function that generates <strong>access_token</strong>. So that instead of returning only <strong>access_token</strong> we can generate a <strong>refresh_token</strong> as well.</p>
-<h3 id=custom-authentication-service>Custom Authentication Service</h3>
-<p>The code snippet below is the full <code>CustomAuthenticationService</code> class. Notice that we are overriding the <code>create</code> method. If you open the source code of <code>AuthenticationService</code> you will see that the <code>create</code> method creates <em>access_token</em> and send response to the client. If you are already familiar with FeathersJS then you should know the role of <code>create</code> method of a service. The <code>create</code> method is responsible for handling <strong>HTTP POST</strong> request to a service. So, we are gonna override the create function and generate refresh_token as well and then append the refresh_token with the response. The snippet below is 90% similar to the original implementation of the <code>create</code> method. The only important part in this code is the <code>data.action</code> and <code>data.refresh_token</code> property. When you want to refresh a token you have to send those two additional parameter. Where <code>data.action</code> is &lsquo;refresh&rsquo; and <code>data.refresh_token</code> is the refresh token you received when logged in. Example payload:</p>
-<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
-	<span style=color:#268bd2>&#34;strategy&#34;</span>: <span style=color:#2aa198>&#34;local&#34;</span>,
-	<span style=color:#268bd2>&#34;action&#34;</span>: <span style=color:#2aa198>&#34;refresh&#34;</span>,
-	<span style=color:#268bd2>&#34;refresh_token&#34;</span>: <span style=color:#2aa198>&#34;eyJhbGciOizcyJ9.eTFiYiJ9.DWe_BPD29z6LT2cttK7&#34;</span>
-}
-</code></pre></div><p>In <code>default.json</code> file create a new property named <code>refreshExpiresIn</code> and give it a value of <code>1d</code> because the validity of <em>refresh_token</em> is much greater that <em>access_token</em>.</p>
-<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> { AuthenticationService } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication&#39;</span>);
-<span style=color:#268bd2>const</span> { NotAuthenticated } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/errors&#39;</span>);
-<span style=color:#268bd2>const</span> logger <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;../logger&#39;</span>);
-
-<span style=color:#268bd2>class</span> CustomAuthenticationService <span style=color:#268bd2>extends</span> AuthenticationService {
-  <span style=color:#586e75>/**
-</span><span style=color:#586e75>   * Create and return a new JWT for a given authentication request.
-</span><span style=color:#586e75>   * Will trigger the `login` event.
-</span><span style=color:#586e75>   * @param data The authentication request (should include `strategy` key)
-</span><span style=color:#586e75>   * @param params Service call parameters
-</span><span style=color:#586e75>   */</span>
-  <span style=color:#268bd2>async</span> create(data, params) {
-    <span style=color:#268bd2>const</span> { entity } <span style=color:#719e07>=</span> <span style=color:#719e07>this</span>.configuration;
-    <span style=color:#268bd2>const</span> authStrategies <span style=color:#719e07>=</span> params.authStrategies <span style=color:#719e07>||</span> <span style=color:#719e07>this</span>.configuration.authStrategies;
-
-    <span style=color:#719e07>if</span> (<span style=color:#719e07>!</span>authStrategies.length) {
-      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;No authentication strategies allowed for creating a JWT (`authStrategies`)&#39;</span>);
-    }
-
-    <span style=color:#268bd2>let</span> refreshTokenPayload;
-    <span style=color:#268bd2>let</span> authResult;
-
-    <span style=color:#719e07>if</span> (data.action <span style=color:#719e07>===</span> <span style=color:#2aa198>&#39;refresh&#39;</span> <span style=color:#719e07>&amp;&amp;</span> <span style=color:#719e07>!</span>data.refresh_token) {
-      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;No refresh token&#39;</span>);
-    } <span style=color:#719e07>else</span> <span style=color:#719e07>if</span> (data.action <span style=color:#719e07>===</span> <span style=color:#2aa198>&#39;refresh&#39;</span>) {
-      refreshTokenPayload <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.verifyAccessToken(data.refresh_token, params.jwt);
-      <span style=color:#719e07>if</span> (refreshTokenPayload.tokenType <span style=color:#719e07>!==</span> <span style=color:#2aa198>&#39;refresh&#39;</span>) {
-        <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;Invalid token&#39;</span>);
-      }
-
-      authResult <span style=color:#719e07>=</span> {
-        [entity]<span style=color:#719e07>:</span> refreshTokenPayload[entity],
-        authentication<span style=color:#719e07>:</span> { strategy<span style=color:#719e07>:</span> data.strategy },
-      };
-    } <span style=color:#719e07>else</span> {
-      authResult <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.authenticate(data, params, ...authStrategies);
-    }
-
-    logger.debug(<span style=color:#2aa198>&#39;Got authentication result &#39;</span> <span style=color:#719e07>+</span> JSON.stringify(authResult));
-
-    <span style=color:#719e07>if</span> (authResult <span style=color:#719e07>&amp;&amp;</span> authResult.accessToken) {
-      <span style=color:#719e07>return</span> authResult;
-    }
-
-    <span style=color:#268bd2>const</span> [payload, jwtOptions] <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#b58900>Promise</span>.all([
-      <span style=color:#719e07>this</span>.getPayload(authResult, params),
-      <span style=color:#719e07>this</span>.getTokenOptions(authResult, params)
-    ]);
-
-    logger.debug(<span style=color:#586e75>`Creating JWT Access Token with </span><span style=color:#2aa198>${</span>JSON.stringify(payload)<span style=color:#2aa198>}</span><span style=color:#586e75>, </span><span style=color:#2aa198>${</span>JSON.stringify(jwtOptions)<span style=color:#2aa198>}</span><span style=color:#586e75>`</span>);
-
-    <span style=color:#268bd2>const</span> accessToken <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.createAccessToken(payload, jwtOptions, params.secret);
-
-    <span style=color:#586e75>/**
-</span><span style=color:#586e75>     * Generate refresh token
-</span><span style=color:#586e75>     */</span>
-    <span style=color:#268bd2>const</span> refreshTokenJwtOptions <span style=color:#719e07>=</span> {
-      ...jwtOptions,
-      expiresIn<span style=color:#719e07>:</span> <span style=color:#719e07>this</span>.configuration.refreshExpiresIn
-    };
-
-    refreshTokenPayload <span style=color:#719e07>=</span> {
-      ...payload,
-      tokenType<span style=color:#719e07>:</span> <span style=color:#2aa198>&#39;refresh&#39;</span>,
-      [entity]<span style=color:#719e07>:</span> authResult[entity]
-    };
-
-    logger.debug(<span style=color:#586e75>`Creating JWT Refresh Token with </span><span style=color:#2aa198>${</span>JSON.stringify(refreshTokenPayload)<span style=color:#2aa198>}</span><span style=color:#586e75>, </span><span style=color:#2aa198>${</span>JSON.stringify(refreshTokenJwtOptions)<span style=color:#2aa198>}</span><span style=color:#586e75>`</span>);
-
-    <span style=color:#268bd2>const</span> refreshToken <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.createAccessToken(refreshTokenPayload, refreshTokenJwtOptions, params.secret);
-
-    <span style=color:#719e07>return</span> <span style=color:#b58900>Object</span>.assign({}, { accessToken, refreshToken<span style=color:#719e07>:</span> refreshToken }, authResult);
-  }
-}
-
-module.exports <span style=color:#719e07>=</span> CustomAuthenticationService;
-
-</code></pre></div><h3 id=custom-jwt-strategy>Custom Jwt Strategy</h3>
-<p>Now, our system has 2 type of JWT tokens and they have different roles. Refresh token is uses only to issue new tokens and access token is used to access all protected routes. Below code snippet is the implementation of <code>CustomJwtStrategy</code> class that extends <code>JWTStrategy</code>. Notice that we are overriding the <code>authenticate</code> method because only that method is responsible to verify a given token. Like our previous custom <code>create</code> method this method is also more or less 90% similar to the original implementation of <code>authenticate</code> method. The code is very straight forward and I believe I don&rsquo;t have to explain it.</p>
-<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> { JWTStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication&#39;</span>);
-<span style=color:#268bd2>const</span> { NotAuthenticated } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/errors&#39;</span>);
-<span style=color:#268bd2>const</span> logger <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;../logger&#39;</span>);
-
-<span style=color:#268bd2>class</span> CustomJwtStrategy <span style=color:#268bd2>extends</span> JWTStrategy {
-
-  <span style=color:#268bd2>async</span> authenticate(authentication, params) {
-    <span style=color:#268bd2>const</span> { accessToken } <span style=color:#719e07>=</span> authentication;
-    <span style=color:#268bd2>const</span> { entity } <span style=color:#719e07>=</span> <span style=color:#719e07>this</span>.configuration;
-
-    <span style=color:#719e07>if</span> (<span style=color:#719e07>!</span>accessToken) {
-      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;No access token&#39;</span>);
-    }
-
-    <span style=color:#268bd2>const</span> payload <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.authentication.verifyAccessToken(accessToken, params.jwt);
-
-    <span style=color:#586e75>// If token type is refresh token then throw error
-</span><span style=color:#586e75></span>    <span style=color:#719e07>if</span> (payload.tokenType <span style=color:#719e07>===</span> <span style=color:#2aa198>&#39;refresh&#39;</span>) {
-      logger.info(<span style=color:#586e75>`User (</span><span style=color:#2aa198>${</span>payload.sub<span style=color:#2aa198>}</span><span style=color:#586e75>) tried to access using refresh token`</span>);
-      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;Invalid access token&#39;</span>);
-    }
-
-    <span style=color:#268bd2>const</span> result <span style=color:#719e07>=</span> {
-      accessToken,
-      authentication<span style=color:#719e07>:</span> {
-        strategy<span style=color:#719e07>:</span> <span style=color:#2aa198>&#39;jwt&#39;</span>,
-        accessToken,
-        payload
-      }
-    };
-
-    <span style=color:#719e07>if</span> (entity <span style=color:#719e07>===</span> <span style=color:#cb4b16>null</span>) {
-      <span style=color:#719e07>return</span> result;
-    }
-
-    <span style=color:#268bd2>const</span> entityId <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.getEntityId(result, params);
-    <span style=color:#268bd2>const</span> value <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.getEntity(entityId, params);
-
-    <span style=color:#719e07>return</span> {
-      ...result,
-      [entity]<span style=color:#719e07>:</span> value
-    };
-  }
-}
-
-module.exports <span style=color:#719e07>=</span> CustomJwtStrategy;
-</code></pre></div><h3 id=use-custom-classes>Use custom classes</h3>
-<p>We have created custom auth service and custom JWT strategy to support refresh_token. Now, open the <code>authentication.js</code> file and instead of importing the default import our newly created <code>CustomAuthService</code> and <code>CustomJwtStrategy</code>. See the code below.</p>
-<div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#268bd2>const</span> { expressOauth } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-oauth&#39;</span>);
-<span style=color:#268bd2>const</span> CustomAuthService <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;./authentication/CustomAuthService&#39;</span>);
-<span style=color:#268bd2>const</span> CustomJwtStrategy <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;./authentication/CustomJwtStrategy&#39;</span>);
-<span style=color:#268bd2>const</span> { LocalStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-local&#39;</span>);
-
-module.exports <span style=color:#719e07>=</span> app =&gt; {
-  <span style=color:#268bd2>const</span> authentication <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> CustomAuthService(app);
-
-  authentication.register(<span style=color:#2aa198>&#39;jwt&#39;</span>, <span style=color:#719e07>new</span> CustomJwtStrategy());
-  authentication.register(<span style=color:#2aa198>&#39;local&#39;</span>, <span style=color:#719e07>new</span> LocalStrategy());
-
-  app.use(<span style=color:#2aa198>&#39;/authentication&#39;</span>, authentication);
-  app.configure(expressOauth());
-};
-</code></pre></div><h3 id=important>Important</h3>
-<p>One important part is left that is to invalidate an used JWT refresh_token. It can easily be implemented in the <code>create</code> method of <code>CustomAuthenticationService</code> class. Later sometime I will update this article mentioning how we can implement it.</p>
-<h3 id=conclusion>Conclusion</h3>
-<p>FeathersJS is a very effective tool for rapid development. There is no native support for refresh_token yet. That is why I had to come up with something. Hope it helps you.</p>
-</div>
-<div class=post-tags>
-<nav class="nav tags">
-<ul class=flat>
-<li><a href=/tags/node.js>Node.JS</a></li>
-<li><a href=/tags/feathersjs>FeathersJS</a></li>
-<li><a href=/tags/javascript>JavaScript</a></li>
-</ul>
-</nav>
-</div>
-</div>
-<div class="footer wrapper">
-<nav class=nav>
-<div> © Another Dev | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div>
-</nav>
-</div>
-<script>feather.replace()</script>
-</body>
-</html>
+<script>(function(e,t,n,s,o,i){e.hj=e.hj||function(){(e.hj.q=e.hj.q||[]).push(arguments)},e._hjSettings={hjid:1562721,hjsv:6},o=t.getElementsByTagName("head")[0],i=t.createElement("script"),i.async=1,i.src=n+e._hjSettings.hjid+s+e._hjSettings.hjsv,o.appendChild(i)})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=")</script></head><body><div class="container wrapper post"><div class=header><base href=http://anotherdev.xyz/><h1 class=site-title><a href=http://anotherdev.xyz/>Yet another software engineer</a></h1><div class=site-description><h2>My thoughts are my own</h2><nav class="nav social"><ul class=flat><a href=https://github.com/shihabmridha title=Github><i data-feather=github></i></a><a href=https://twitter.com/shihabmridha title=Twitter><i data-feather=twitter></i></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>Home</a></li><li><a href=/posts>All posts</a></li><li><a href=/about>About</a></li><li><a href=/tags>Tags</a></li></ul></nav></div><div class=post-header><h1 class=title>FeathersJS Refresh Token Implementation</h1><div class=meta>Posted at &mdash; Jul 17, 2020</div></div><div class=markdown><p>FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh_token. In this article we will see how we can implement refresh_token feature to our system.</p><blockquote><p>In the article I will be using Mongoose but the main part should be identical for any ORM you use.</p></blockquote><h3 id=what-feathersjs-gives-you>What FeathersJS gives you</h3><p>After creating a FeathersJS application you will get a file in <strong>src</strong> directory named <code>authentication.js</code>. You can say that this file is the <strong>service</strong> (I believe you know what a service is in FeathersJS) for authentication. In this authentication service the endpoint is defined and also other configurations like which class to use for <em>local-strategy</em> or which class to use for <em>jwt-strategy</em> is defined. By default the file looks like this.</p><div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#268bd2>const</span> { AuthenticationService, JWTStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> { LocalStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-local&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> { expressOauth } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-oauth&#39;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>module.exports <span style=color:#719e07>=</span> app =&gt; {
+</span></span><span style=display:flex><span>  <span style=color:#268bd2>const</span> authentication <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> AuthenticationService(app);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  authentication.register(<span style=color:#2aa198>&#39;jwt&#39;</span>, <span style=color:#719e07>new</span> JWTStrategy());
+</span></span><span style=display:flex><span>  authentication.register(<span style=color:#2aa198>&#39;local&#39;</span>, <span style=color:#719e07>new</span> LocalStrategy());
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  app.use(<span style=color:#2aa198>&#39;/authentication&#39;</span>, authentication);
+</span></span><span style=display:flex><span>  app.configure(expressOauth());
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><p>As you can see from the code above, Feathers uses its built-in <code>AuthenticationService</code> class to instantiate authentication service. For <em>local-strategy</em> it uses <code>LocalStrategy</code> class and for <em>jwt-strategy</em> it uses <code>JWTStrategy</code> class. All the default authentication features/behaviours you get from feathers are defined in those classes. But, the mechanism for refresh token is not built in to Feathers. I will not go deep into how refresh token works because there are tons of articles about it. One thing that I need to mention is, everyone uses a separate endpoint to refresh a token ex: <code>/refresh-token</code> but we are going to use our existing <code>/authentication</code> endpoint to refresh a token. It would make the whole process a lot easier.</p><h3 id=goal-to-achieve>Goal to achieve</h3><ul><li>When user logs in we send a <strong><em>refresh_token</em></strong> along with <em><strong>access_token</strong></em>.</li><li>Allow user to get a new <strong><em>refresh_token</em></strong> and <em><strong>access_token</strong></em> using previously issued valid <strong><em>refresh_token</em></strong>. No login needed this time.</li></ul><h3 id=plan-to-implement>Plan to implement</h3><ul><li>Create a new directory named <code>authentication</code> in <code>src</code> directory.</li><li>Create 2 files named <em>CustomAuthService.js</em> and <em>CustomJwtStrategy.js</em>.</li><li>Create <code>CustomAuthService</code> class that inherits <code>AuthenticationService</code>.</li><li>Override necessary method in our child class to facilitate refresh token feature.</li><li>Create <code>CustomJwtStrategy</code> class that inherits <code>JWTStrategy</code>.</li><li>Override necessary method in our child class to facilitate refresh token feature.</li></ul><p>We don&rsquo;t need to override anything from <code>LocalStrategy</code> class because that class is responsible to handle login using password. Refresh token has noting to do with how we login to the system. One thing to keep in mind that <code>LocalStrategy</code> uses <code>AuthenticationService</code> as well. The <strong>access_token</strong> we get after login is generated using <code>AuthenticationService</code>. That is why we are creating our <code>CustomAuthService</code> to override the function that generates <strong>access_token</strong>. So that instead of returning only <strong>access_token</strong> we can generate a <strong>refresh_token</strong> as well.</p><h3 id=custom-authentication-service>Custom Authentication Service</h3><p>The code snippet below is the full <code>CustomAuthenticationService</code> class. Notice that we are overriding the <code>create</code> method. If you open the source code of <code>AuthenticationService</code> you will see that the <code>create</code> method creates <em>access_token</em> and send response to the client. If you are already familiar with FeathersJS then you should know the role of <code>create</code> method of a service. The <code>create</code> method is responsible for handling <strong>HTTP POST</strong> request to a service. So, we are gonna override the create function and generate refresh_token as well and then append the refresh_token with the response. The snippet below is 90% similar to the original implementation of the <code>create</code> method. The only important part in this code is the <code>data.action</code> and <code>data.refresh_token</code> property. When you want to refresh a token you have to send those two additional parameter. Where <code>data.action</code> is &lsquo;refresh&rsquo; and <code>data.refresh_token</code> is the refresh token you received when logged in. Example payload:</p><div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>	<span style=color:#268bd2>&#34;strategy&#34;</span>: <span style=color:#2aa198>&#34;local&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#268bd2>&#34;action&#34;</span>: <span style=color:#2aa198>&#34;refresh&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#268bd2>&#34;refresh_token&#34;</span>: <span style=color:#2aa198>&#34;eyJhbGciOizcyJ9.eTFiYiJ9.DWe_BPD29z6LT2cttK7&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>In <code>default.json</code> file create a new property named <code>refreshExpiresIn</code> and give it a value of <code>1d</code> because the validity of <em>refresh_token</em> is much greater that <em>access_token</em>.</p><div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#268bd2>const</span> { AuthenticationService } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> { NotAuthenticated } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/errors&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> logger <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;../logger&#39;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>class</span> CustomAuthenticationService <span style=color:#268bd2>extends</span> AuthenticationService {
+</span></span><span style=display:flex><span>  <span style=color:#586e75>/**
+</span></span></span><span style=display:flex><span><span style=color:#586e75>   * Create and return a new JWT for a given authentication request.
+</span></span></span><span style=display:flex><span><span style=color:#586e75>   * Will trigger the `login` event.
+</span></span></span><span style=display:flex><span><span style=color:#586e75>   * @param data The authentication request (should include `strategy` key)
+</span></span></span><span style=display:flex><span><span style=color:#586e75>   * @param params Service call parameters
+</span></span></span><span style=display:flex><span><span style=color:#586e75>   */</span>
+</span></span><span style=display:flex><span>  <span style=color:#268bd2>async</span> create(data, params) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> { entity } <span style=color:#719e07>=</span> <span style=color:#719e07>this</span>.configuration;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> authStrategies <span style=color:#719e07>=</span> params.authStrategies <span style=color:#719e07>||</span> <span style=color:#719e07>this</span>.configuration.authStrategies;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#719e07>if</span> (<span style=color:#719e07>!</span>authStrategies.length) {
+</span></span><span style=display:flex><span>      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;No authentication strategies allowed for creating a JWT (`authStrategies`)&#39;</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>let</span> refreshTokenPayload;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>let</span> authResult;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#719e07>if</span> (data.action <span style=color:#719e07>===</span> <span style=color:#2aa198>&#39;refresh&#39;</span> <span style=color:#719e07>&amp;&amp;</span> <span style=color:#719e07>!</span>data.refresh_token) {
+</span></span><span style=display:flex><span>      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;No refresh token&#39;</span>);
+</span></span><span style=display:flex><span>    } <span style=color:#719e07>else</span> <span style=color:#719e07>if</span> (data.action <span style=color:#719e07>===</span> <span style=color:#2aa198>&#39;refresh&#39;</span>) {
+</span></span><span style=display:flex><span>      refreshTokenPayload <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.verifyAccessToken(data.refresh_token, params.jwt);
+</span></span><span style=display:flex><span>      <span style=color:#719e07>if</span> (refreshTokenPayload.tokenType <span style=color:#719e07>!==</span> <span style=color:#2aa198>&#39;refresh&#39;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;Invalid token&#39;</span>);
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      authResult <span style=color:#719e07>=</span> {
+</span></span><span style=display:flex><span>        [entity]<span style=color:#719e07>:</span> refreshTokenPayload[entity],
+</span></span><span style=display:flex><span>        authentication<span style=color:#719e07>:</span> { strategy<span style=color:#719e07>:</span> data.strategy },
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    } <span style=color:#719e07>else</span> {
+</span></span><span style=display:flex><span>      authResult <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.authenticate(data, params, ...authStrategies);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    logger.debug(<span style=color:#2aa198>&#39;Got authentication result &#39;</span> <span style=color:#719e07>+</span> JSON.stringify(authResult));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#719e07>if</span> (authResult <span style=color:#719e07>&amp;&amp;</span> authResult.accessToken) {
+</span></span><span style=display:flex><span>      <span style=color:#719e07>return</span> authResult;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> [payload, jwtOptions] <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#b58900>Promise</span>.all([
+</span></span><span style=display:flex><span>      <span style=color:#719e07>this</span>.getPayload(authResult, params),
+</span></span><span style=display:flex><span>      <span style=color:#719e07>this</span>.getTokenOptions(authResult, params)
+</span></span><span style=display:flex><span>    ]);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    logger.debug(<span style=color:#586e75>`Creating JWT Access Token with </span><span style=color:#2aa198>${</span>JSON.stringify(payload)<span style=color:#2aa198>}</span><span style=color:#586e75>, </span><span style=color:#2aa198>${</span>JSON.stringify(jwtOptions)<span style=color:#2aa198>}</span><span style=color:#586e75>`</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> accessToken <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.createAccessToken(payload, jwtOptions, params.secret);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#586e75>/**
+</span></span></span><span style=display:flex><span><span style=color:#586e75>     * Generate refresh token
+</span></span></span><span style=display:flex><span><span style=color:#586e75>     */</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> refreshTokenJwtOptions <span style=color:#719e07>=</span> {
+</span></span><span style=display:flex><span>      ...jwtOptions,
+</span></span><span style=display:flex><span>      expiresIn<span style=color:#719e07>:</span> <span style=color:#719e07>this</span>.configuration.refreshExpiresIn
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    refreshTokenPayload <span style=color:#719e07>=</span> {
+</span></span><span style=display:flex><span>      ...payload,
+</span></span><span style=display:flex><span>      tokenType<span style=color:#719e07>:</span> <span style=color:#2aa198>&#39;refresh&#39;</span>,
+</span></span><span style=display:flex><span>      [entity]<span style=color:#719e07>:</span> authResult[entity]
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    logger.debug(<span style=color:#586e75>`Creating JWT Refresh Token with </span><span style=color:#2aa198>${</span>JSON.stringify(refreshTokenPayload)<span style=color:#2aa198>}</span><span style=color:#586e75>, </span><span style=color:#2aa198>${</span>JSON.stringify(refreshTokenJwtOptions)<span style=color:#2aa198>}</span><span style=color:#586e75>`</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> refreshToken <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.createAccessToken(refreshTokenPayload, refreshTokenJwtOptions, params.secret);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#719e07>return</span> <span style=color:#b58900>Object</span>.assign({}, { accessToken, refreshToken<span style=color:#719e07>:</span> refreshToken }, authResult);
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>module.exports <span style=color:#719e07>=</span> CustomAuthenticationService;
+</span></span></code></pre></div><h3 id=custom-jwt-strategy>Custom Jwt Strategy</h3><p>Now, our system has 2 type of JWT tokens and they have different roles. Refresh token is uses only to issue new tokens and access token is used to access all protected routes. Below code snippet is the implementation of <code>CustomJwtStrategy</code> class that extends <code>JWTStrategy</code>. Notice that we are overriding the <code>authenticate</code> method because only that method is responsible to verify a given token. Like our previous custom <code>create</code> method this method is also more or less 90% similar to the original implementation of <code>authenticate</code> method. The code is very straight forward and I believe I don&rsquo;t have to explain it.</p><div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#268bd2>const</span> { JWTStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> { NotAuthenticated } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/errors&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> logger <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;../logger&#39;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>class</span> CustomJwtStrategy <span style=color:#268bd2>extends</span> JWTStrategy {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#268bd2>async</span> authenticate(authentication, params) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> { accessToken } <span style=color:#719e07>=</span> authentication;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> { entity } <span style=color:#719e07>=</span> <span style=color:#719e07>this</span>.configuration;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#719e07>if</span> (<span style=color:#719e07>!</span>accessToken) {
+</span></span><span style=display:flex><span>      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;No access token&#39;</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> payload <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.authentication.verifyAccessToken(accessToken, params.jwt);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#586e75>// If token type is refresh token then throw error
+</span></span></span><span style=display:flex><span><span style=color:#586e75></span>    <span style=color:#719e07>if</span> (payload.tokenType <span style=color:#719e07>===</span> <span style=color:#2aa198>&#39;refresh&#39;</span>) {
+</span></span><span style=display:flex><span>      logger.info(<span style=color:#586e75>`User (</span><span style=color:#2aa198>${</span>payload.sub<span style=color:#2aa198>}</span><span style=color:#586e75>) tried to access using refresh token`</span>);
+</span></span><span style=display:flex><span>      <span style=color:#719e07>throw</span> <span style=color:#719e07>new</span> NotAuthenticated(<span style=color:#2aa198>&#39;Invalid access token&#39;</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> result <span style=color:#719e07>=</span> {
+</span></span><span style=display:flex><span>      accessToken,
+</span></span><span style=display:flex><span>      authentication<span style=color:#719e07>:</span> {
+</span></span><span style=display:flex><span>        strategy<span style=color:#719e07>:</span> <span style=color:#2aa198>&#39;jwt&#39;</span>,
+</span></span><span style=display:flex><span>        accessToken,
+</span></span><span style=display:flex><span>        payload
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#719e07>if</span> (entity <span style=color:#719e07>===</span> <span style=color:#cb4b16>null</span>) {
+</span></span><span style=display:flex><span>      <span style=color:#719e07>return</span> result;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> entityId <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.getEntityId(result, params);
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>const</span> value <span style=color:#719e07>=</span> <span style=color:#268bd2>await</span> <span style=color:#719e07>this</span>.getEntity(entityId, params);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#719e07>return</span> {
+</span></span><span style=display:flex><span>      ...result,
+</span></span><span style=display:flex><span>      [entity]<span style=color:#719e07>:</span> value
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>module.exports <span style=color:#719e07>=</span> CustomJwtStrategy;
+</span></span></code></pre></div><h3 id=use-custom-classes>Use custom classes</h3><p>We have created custom auth service and custom JWT strategy to support refresh_token. Now, open the <code>authentication.js</code> file and instead of importing the default import our newly created <code>CustomAuthService</code> and <code>CustomJwtStrategy</code>. See the code below.</p><div class=highlight><pre tabindex=0 style=color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#268bd2>const</span> { expressOauth } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-oauth&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> CustomAuthService <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;./authentication/CustomAuthService&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> CustomJwtStrategy <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;./authentication/CustomJwtStrategy&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>const</span> { LocalStrategy } <span style=color:#719e07>=</span> require(<span style=color:#2aa198>&#39;@feathersjs/authentication-local&#39;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>module.exports <span style=color:#719e07>=</span> app =&gt; {
+</span></span><span style=display:flex><span>  <span style=color:#268bd2>const</span> authentication <span style=color:#719e07>=</span> <span style=color:#719e07>new</span> CustomAuthService(app);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  authentication.register(<span style=color:#2aa198>&#39;jwt&#39;</span>, <span style=color:#719e07>new</span> CustomJwtStrategy());
+</span></span><span style=display:flex><span>  authentication.register(<span style=color:#2aa198>&#39;local&#39;</span>, <span style=color:#719e07>new</span> LocalStrategy());
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  app.use(<span style=color:#2aa198>&#39;/authentication&#39;</span>, authentication);
+</span></span><span style=display:flex><span>  app.configure(expressOauth());
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h3 id=important>Important</h3><p>One important part is left that is to invalidate an used JWT refresh_token. It can easily be implemented in the <code>create</code> method of <code>CustomAuthenticationService</code> class. Later sometime I will update this article mentioning how we can implement it.</p><h3 id=conclusion>Conclusion</h3><p>FeathersJS is a very effective tool for rapid development. There is no native support for refresh_token yet. That is why I had to come up with something. Hope it helps you.</p></div><div class=post-tags><nav class="nav tags"><ul class=flat><li><a href=/tags/node.js>Node.JS</a></li><li><a href=/tags/feathersjs>FeathersJS</a></li><li><a href=/tags/javascript>JavaScript</a></li></ul></nav></div></div><div class="footer wrapper"><nav class=nav><div>© Another Dev | <a href=https://github.com/vividvilla/ezhil>Ezhil theme</a> | Built with <a href=https://gohugo.io>Hugo</a></div></nav></div><script>feather.replace()</script></body></html>
