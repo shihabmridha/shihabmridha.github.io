@@ -11,12 +11,7 @@ title = "Educative.io course downloader (Discontinued)"
 
 +++
 
-
-
-
 ## **Important:** Project Discontinued
-
-
 
 Are you familiar with [educative.io](https://www.educative.io)? They provide interactive courses for software developers. One of their famous course is [Grokking the system design interview](https://www.educative.io/courses/grokking-the-system-design-interview). Course authors are software engineer of large companies like Google, Amazon, Microsoft, Databricks etc. So you know, this course is not authored by some average software engineers. In this course you will learn how Twitter, Uber, Dropbox etc systems are designed.
 
