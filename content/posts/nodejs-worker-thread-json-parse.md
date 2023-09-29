@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["Node.JS", "Worker thread"]
 date = 2019-11-29T12:47:05Z
 description = "Use nodejs worker thread to handle CPU intensive task without blocking the main thread. JSON parsing using nodejs worker thread."
 draft = false
 slug = "nodejs-worker-thread-json-parse"
 summary = "Use nodejs worker thread to handle CPU intensive task without blocking the main thread. JSON parsing using nodejs worker thread."
-tags = ["Node.JS", "Worker thread"]
+tags = ["nodejs"]
 title = "NodeJS worker threads. Handle CPU intensive task without blocking the event loop"
 
 +++

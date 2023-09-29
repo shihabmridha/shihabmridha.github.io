@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["Node.JS"]
 date = 2019-12-09T07:18:06Z
 description = "Upload a file to multiple destination using multer module in nodejs."
 draft = false
 slug = "upload-file-multiple-destinations-multer"
 summary = "Upload a file to multiple destination using multer module in nodejs."
-tags = ["Node.JS"]
+tags = ["nodejs"]
 title = "Upload file to multiple destinations using multer in node.js"
 
 +++

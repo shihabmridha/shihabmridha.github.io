@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["JavaScript", "Concurrency", "Parallelism"]
 date = 2019-10-30T07:37:34Z
 description = "Things will run concurrently in single-core CPU and will run in parallel in multi-core CPU. It's main task is to wait until all the promises that are passed to it are resolved."
 draft = false
 slug = "promise-all-runs-in-parallel"
 summary = "Things will run concurrently in single-core CPU and will run in parallel in multi-core CPU. It's main task is to wait until all the promises that are passed to it are resolved."
-tags = ["JavaScript", "Concurrency", "Parallelism"]
+tags = ["javascript", "concurrency", "parallelism"]
 title = "Does Promise.all() run tasks in parallel?"
 
 +++

@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["Flutter"]
 date = 2023-05-26T16:54:31Z
 description = "Install and configure Flutter on Windows without Android Studio and use Windows Subsystem for Android as emulator"
 draft = false
 slug = "flutter-setup-without-android-studio-windows-subsystem-for-android"
 summary = "Install and configure Flutter on Windows without Android Studio and use Windows Subsystem for Android as emulator"
-tags = ["Flutter"]
+tags = ["flutter"]
 title = "Configure Flutter without Android Studio on Windows Subsystem for Android"
 
 +++

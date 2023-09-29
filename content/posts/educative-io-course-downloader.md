@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["Node.JS", "TypeScript", "JavaScript"]
 date = 2020-02-02T18:00:03Z
 description = "This script will download course for you from Educative.io. It uses NodeJS, TypeScript and your login credentials."
 draft = false
 slug = "educative-io-course-downloader"
 summary = "This script will download course for you from Educative.io. It uses NodeJS, TypeScript and your login credentials."
-tags = ["Node.JS", "TypeScript", "JavaScript"]
+tags = ["nodejs", "typescript", "javascript"]
 title = "Educative.io course downloader (Discontinued)"
 
 +++
@@ -48,6 +47,3 @@ Now the script should start downloading the course and save it to `downloads/{CO
 This script is written in a couple of hours and there are a lot of things to improve. Feel free to create PR, issue etc.
 
 Thank you for reading.
-
-
-

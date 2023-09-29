@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["Nginx", "Cloudflare", "Letsencrypt"]
 date = 2019-10-31T10:39:19Z
 description = "A very little knowledge about Cloudflare's SSL feature caused too many redirect issue and took three hours to find and fix."
 draft = false
 slug = "cloudflare-nginx-letsencrypt-ssl-too-many-redirect"
 summary = "A very little knowledge about Cloudflare's SSL feature caused too many redirect issue and took three hours to find and fix."
-tags = ["Nginx", "Cloudflare", "Letsencrypt"]
+tags = ["nginx", "cloudflare", "letsencrypt"]
 title = "Cloudflare, Nginx, Letsencrypt SSL setup. Too many redirect issue. (Silly mistake)"
 
 +++
@@ -32,4 +31,3 @@ After wasting two to three hours I have found a command to trace my request. The
 I never wasted that much time setting up an SSL certificate, EVER!
 
 > Little knowledge is a dangerous thing.
-

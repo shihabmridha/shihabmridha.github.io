@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["Node.JS", "FeathersJS", "JavaScript"]
 date = 2020-07-17T09:29:18Z
 description = "FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh token. In this article we will see how we can implement refresh token feature to our system."
 draft = false
 slug = "feathersjs-refresh-token"
 summary = "FeathersJS provides authentication mechanism out of the box. But, it does not provide support for a refresh token. In this article we will see how we can implement refresh token feature to our system."
-tags = ["Node.JS", "FeathersJS", "JavaScript"]
+tags = ["nodejs", "feathersjs", "javascript"]
 title = "FeathersJS Refresh Token Implementation"
 
 +++
@@ -229,4 +228,3 @@ One important part is left that is to invalidate an used JWT refresh_token. It c
 ### Conclusion
 
 FeathersJS is a very effective tool for rapid development. There is no native support for refresh_token yet. That is why I had to come up with something. Hope it helps you.
-

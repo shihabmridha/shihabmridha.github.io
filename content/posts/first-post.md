@@ -1,11 +1,10 @@
 +++
 author = "Dijkstra"
-categories = ["Uncategorized"]
 date = 2019-10-29T16:54:31Z
 description = "Hello world?"
 draft = false
 slug = "first-post"
-tags = ["Uncategorized"]
+tags = ["miscellaneous"]
 title = "Hello world?"
 
 +++

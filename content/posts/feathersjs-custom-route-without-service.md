@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["FeathersJS", "Node.JS"]
 date = 2019-11-19T19:59:24Z
 description = "Create a custom route in FeathersJS without creating a new service. A short video of the whole process is given as well."
 draft = false
 slug = "feathersjs-custom-route-without-service"
 summary = "Create a custom route in FeathersJS without creating a new service. A short video of the whole process is given as well."
-tags = ["FeathersJS", "Node.JS"]
+tags = ["feathersjs", "nodejs"]
 title = "Create a custom route in FeathersJS without creating new service"
 
 +++
@@ -182,4 +181,3 @@ Technically speaking we had to create a new service but, also for simple task th
 ### Reference:
 
 * The image is from feathers's official website.
-

@@ -1,12 +1,11 @@
 +++
 author = "Dijkstra"
-categories = ["Node.JS", "TypeScript"]
 date = 2019-10-30T05:03:00Z
 description = "End of the day everyone wants type safety in their code. Better type safety means less error in production. TypeScript provides type safety to JavaScript and it plays very well with Node.JS"
 draft = false
 slug = "typescript-nodejs-get-start"
 summary = "End of the day everyone wants type safety in their code. Better type safety means less error in production. TypeScript provides type safety to JavaScript and it plays very well with Node.JS"
-tags = ["Node.JS", "TypeScript"]
+tags = ["nodejs", "typescript"]
 title = "TypeScript with NodeJS. Type safety with better IntelliSense in NodeJS"
 
 +++

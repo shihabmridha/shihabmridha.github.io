@@ -1,18 +1,17 @@
 +++
 author = "Dijkstra"
-categories = ["React native", "Java", "JavaScript", "SMTP"]
 date = 2019-10-30T09:31:32Z
 description = "React native SMTP is a SMTP client for react-native. It can be used to send emails in the background using the SMTP protocol. This module only supports Android."
 draft = false
 slug = "react-native-smtp-send-email"
 summary = "React native SMTP is a SMTP client for react-native. It can be used to send emails in the background using the SMTP protocol. This module only supports Android."
-tags = ["React native", "Java", "JavaScript", "SMTP"]
+tags = ["react native", "java", "javascript", "smtp"]
 title = "React Native SMTP. Send Email in Background (Android Only)"
 
 +++
 
 
-I am not a big fan of mobile application development. In fact, I don't feel comfortable with anything related to the user interface. It is not like I can not do, it is more like I am uncomfortable with it. But, as a software engineer (full-stack) I can not just deny doing a task.
+I am not a big fan of mobile application development. In fact, I don't feel comfortable with anything related to the user interface. It is not like I can not do, it is more like I am less experienced with it.
 
 In my current project, I was writing some back-end stuff for our new IoT platform. Suddenly one of my team asked me to help him with his [react native](https://facebook.github.io/react-native/) project. He had a deadline soon and a lot of work to do. He convinced me to work with him because he knew I had previous experience with the react library. Since react and react-native are similar, I decided to help him. FYI, the app was android only.
 

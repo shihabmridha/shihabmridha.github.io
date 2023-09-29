@@ -4,7 +4,7 @@ date = 2019-10-30T03:01:24Z
 description = ""
 draft = false
 slug = "about"
-summary = "I am Shihab, working as a software engineer. I like NodeJS and Golang a lot. System design and architecture enthusiast. NoSQL, Distributed system fanboy. "
+summary = "I am Shihab, working as a software engineer. I like NodeJS and Golang a lot. System design and architecture enthusiast. NoSQL, Distributed system fanboy."
 title = "About"
 type = "page"
 +++
