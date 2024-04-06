@@ -1,11 +1,11 @@
 +++
 author = "Dijkstra"
 date = 2020-02-02T18:00:03Z
-description = "This script will download course for you from Educative.io. It uses NodeJS, TypeScript and your login credentials."
+description = "This script will download course for you from Educative.io. It uses Bun, TypeScript and your login credentials."
 draft = false
 slug = "educative-io-course-downloader"
-summary = "This script will download course for you from Educative.io. It uses NodeJS, TypeScript and your login credentials."
-tags = ["nodejs", "typescript", "javascript"]
+summary = "This script will download course for you from Educative.io. It uses Bun, TypeScript and your login credentials."
+tags = ["bun", "typescript", "javascript"]
 title = "Educative.io course downloader"
 
 +++
@@ -22,8 +22,7 @@ Recently I have got a subscription of educative.io and started to explore their 
 
 ### Prerequisites
 
-* NodeJS
-* PNPM package manager
+* Bun
 * Educative.io subscription (for paid courses)
 
 ### How to use?
@@ -31,10 +30,9 @@ Recently I have got a subscription of educative.io and started to explore their 
 Instructions are given in to the repository but for the sake of this article here we go again. Here is the [GitHub repository](https://github.com/shihabmridha/educative.io-downloader) link.
 
 * Clone the project first. Then navigate to the project directory.
-* Run `pnpm install` to install required dependencies.
-* Run `pnpm compile` to compile the TypeScript.
+* Run `bun install` to install required dependencies.
 * Open `config/default.json` file in a test editor and put your email, password and course URLs that you want to download.
-* Finally run, `pnpm start`.
+* Finally run, `bun start`.
 
 Now the script should start downloading the course and save it to `downloads/{COURSE_TITLE}` directory. Each lessons are number by their order.
 
