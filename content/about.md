@@ -1,26 +1,22 @@
 +++
 author = "Dijkstra"
 date = 2019-10-30T03:01:24Z
-description = ""
+description = "About me"
 draft = false
 slug = "about"
-summary = "I am Shihab, working as a software engineer. I like NodeJS and Golang a lot. System design and architecture enthusiast. NoSQL, Distributed system fanboy."
+summary = "I am Shihab, working as a software engineer. I use NodeJS and Golang mostly. System design and architecture enthusiast. Recently found interest in ML and Math"
 title = "About"
 type = "page"
 +++
 
-Hi, I am a software engineer with more than three years of experience under my belt.
+Hi, I am a software engineer with more than five years of experience under my belt. I have mostly used NodeJS with TypeScript and MongoDB as database but I am not bound to it. In last few years I have used a lot of technologies. A short list is below:
 
-I have mostly used NodeJS with TypeScript and MongoDB as database but I am not bound to it. In last few years I have used a lot of technologies. A short list is below:
+**Languages:** C#, TypeScript, Golang, PHP, Python, Bash
 
-**Languages:** C#, Java, TypeScript, PHP, Bash, Python, Golang,
+**IDE/Tools:** VS Code, Visual Studio, Dbeaver, Bruno, Docker, Git
 
-**IDE/Tools:** VS Code, Visual Studio, PHP Storm
+**Frameworks/Technologies:** NodeJS, .NET Core, Laravel, Elasticsearch, WebSocket, React Native
 
-**Frameworks/Technologies:** Docker, Git, Elasticsearch, NodeJS, Laravel, WebSocket, React, React Native etc.
+**Databases:** MongoDB, MySQL, MS SQL, PostgreSQL, Snowflake, Redis
 
-**Databases:** MongoDB, MySQL, MS SQL, PostgreSQL, Redis
-
-Nowadays I am learning system design, golang, c# and aws. Also, focusing on building/writing scalable products.
-
-Currently working for [Toptal](https://toptal.com).
+Nowadays I am learning machine learning, math, golang, system design, religion and philosophy.
